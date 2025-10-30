@@ -60,10 +60,9 @@ StackRNN-exp/
 ## 今後の予定
 
 - [ ] Stack-RNN本体の実装完成
-- [ ] Neural Turing Machine (NTM) の実装
-- [ ] 逆ポーランド記法パーサー
+- [ ] Neural Turing Machine (NTM) の実装再現
+- [ ] 逆ポーランド記法タスク
 - [ ] 括弧マッチングタスク
-- [ ] 性能比較実験と論文執筆
 
 ## 参考文献
 
