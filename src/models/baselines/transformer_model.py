@@ -20,7 +20,17 @@ class PositionalEncoding(nn.Module):
         self.register_buffer('pe', pe)
         
     def forward(self, x):
-        x = x + self.pe[:x.size(0), :]
+        """
+        Args:
+            x: Tensor of shape (seq_len, batch_size, d_model)
+        Returns:
+            Tensor of shape (seq_len, batch_size, d_model)
+        """
+        # x: (seq_len, batch_size, d_model)
+        # self.pe: (max_len, d_model)
+        # self.pe[:x.size(0), :]: (seq_len, d_model)
+        # unsqueeze(1)で(seq_len, 1, d_model)にしてbroadcast
+        x = x + self.pe[:x.size(0), :].unsqueeze(1)
         return self.dropout(x) 
     
 
@@ -30,6 +40,7 @@ class TransformerModel(nn.Module):
         self.nchar = nchar
         self.nhid = nhid
         self.nhead = nhead
+        self.nlayers = nlayers  # 追加: nlayersを保存
         self.max_len = max_len
         
         self.embedding = nn.Embedding(nchar, nhid)
@@ -71,7 +82,7 @@ class TransformerModel(nn.Module):
         return mask
     
     def forward(self, input_seq, mask=None, use_causal_mask=True):
-        if input_seq.dim == 1:
+        if input_seq.dim() == 1:  # 修正: dim -> dim()
             input_seq = input_seq.unsqueeze(0)  # バッチ次元を追加
             single_sequence = True
         else:
@@ -100,14 +111,21 @@ class TransformerModel(nn.Module):
     def forward_step(self, input_seq, log_probs=False):
         """
         1ステップの予測を行う
-        input_seq: (batch_size, seq_len)
-        return: (batch_size, nchar)
+        
+        Args:
+            input_seq: Tensor of shape (batch_size, seq_len)
+            log_probs: If True, return log probabilities
+        Returns:
+            output: Tensor of shape (batch_size, nchar) - 最後のトークンの予測
         """
         if input_seq.dim() == 0:
-            input_seq = input_seq.unsqueeze(0)
+            input_seq = input_seq.unsqueeze(0).unsqueeze(0)  # (1, 1)にする
+        elif input_seq.dim() == 1:
+            input_seq = input_seq.unsqueeze(0)  # (1, seq_len)にする
             
         full_output = self.forward(input_seq, use_causal_mask=True)
-        output = full_output[-1]
+        # full_output: (batch_size, seq_len, nchar)
+        output = full_output[:, -1, :]  # 最後のトークンの出力: (batch_size, nchar)
         
         if log_probs:
             output = F.log_softmax(output, dim=-1)
