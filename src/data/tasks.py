@@ -74,7 +74,7 @@ def task6(nmax, nmin, nchar=4):
     p = [0] * n + [1] * m + [2] * n + [3] * m
     return ''.join(chr(ord('a') + v) for v in p)
 
-def generate_addition(nmax, nmin, base):
+def task7(nmax, nmin, base):
     """
     Binary Addition Task
     Generate addition sequence like n+m=result.
@@ -135,6 +135,6 @@ def generate_next_sequence(nmax, nmin, nchar, nrep, ntask):
     elif ntask == 6:
         return task6(nmax, nmin, nchar)
     elif ntask == 7:
-        return generate_addition(nmax, nmin, nchar)
+        return task7(nmax, nmin, nchar)
     else:
         return task1(nmax, nmin, nchar)

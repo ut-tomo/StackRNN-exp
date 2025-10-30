@@ -91,7 +91,7 @@ class TransformerModel(nn.Module):
         batch_size, seq_len = input_seq.size()
         device = input_seq.device
         
-        embedded = self.embedding(input_seq) * math.sqrt(self.d_model)
+        embedded = self.embedding(input_seq) * math.sqrt(self.d_model) #分散が d_model二位なるので正規化してスケールを揃えようというやつ
         embedded = embedded.transpose(0, 1)  # (seq_len, batch_size, nhid)
         embedded = self.pos_encoder(embedded)
         embedded = embedded.transpose(0, 1)  # (batch_size, seq_len, nhid)
