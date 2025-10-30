@@ -6,7 +6,7 @@ import torch.nn.functional as F
 class StackRNN(nn.Module):
     """
     In: 
-         my_int si,       // _IN: 入力次元(語彙数など)入力は整数IDで渡し、one-hot相当で扱う. _INと_OUTを分ける意味がないのでncharで統一.
+         my_int si,       // _IN: 入力次元(語彙数など)入力は整数IDで渡し, one-hot相当で扱う. _INと_OUTを分ける意味がないのでncharで統一.
          my_int sh,       // _HIDDEN: 隠れ層の次元
          my_int nstack,   // _NB_STACK: スタック本数(並列スタックの数)
          my_int stack_capacity, // _STACK_SIZE: 各スタックの容量(固定長デック)
@@ -71,7 +71,7 @@ class StackRNN(nn.Module):
         
         self.hid2out = nn.Linear(self.n_hid, self.n_out, bias=False)
         
-        def _initialize_weights(self):
+    def _initialize_weights(self):
         """Initialize weights using specified initialization method."""
         
         # Define initialization functions
@@ -136,3 +136,36 @@ class StackRNN(nn.Module):
                 self.hid2stack[s].weight[self.top_of_stack + 1:, :] = 0
         
         init_func(self.hid2out)
+        
+    def _create_shift_matrices(self):
+        """
+        スタックの更新を行列積で表現できるようにする.
+        New Stack = Shift Mat @ Old Stack の形. 
+        
+        C++実装 (参考)
+        
+        push演算:
+            スタックを下方向に1段シフトし, TOP位置に新しい値 v_t を挿入する.
+            下記のように実装される：
+                for i = STACK_SIZE-1 → TOP+1:
+                    stack[i] = stack[i-1];
+                stack[TOP] = v_t;
+            → 古い要素は1段下に潜り, DEPTH以降の領域に保存され続ける.
+
+        pop演算:
+            スタックを上方向に1段シフトし, 最上段を削除する（末尾を0埋め）.
+                for i = TOP → STACK_SIZE-2:
+                    stack[i] = stack[i+1];
+                stack[STACK_SIZE-1] = 0;
+            → 深い層にあった値が浮上し, 再び読み出し可能になる.
+        
+        以下のような連続化が行われる: 
+        new_stack[i] = p_push * push_buf[i]
+                 + p_pop  * pop_buf[i]
+                 + p_noop * stack[i];
+                 
+        行列演算として表現するには, まずは depth以降の0マスクが必要.
+        その上で適切に要素をシフトし上位の段を連続的に計算する.
+        """
+        
+        
