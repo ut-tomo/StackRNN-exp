@@ -1,7 +1,3 @@
-"""
-pytest設定ファイル
-srcディレクトリをPythonパスに自動追加
-"""
 import sys
 from pathlib import Path
 

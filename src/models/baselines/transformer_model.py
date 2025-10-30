@@ -40,7 +40,7 @@ class TransformerModel(nn.Module):
         self.nchar = nchar
         self.nhid = nhid
         self.nhead = nhead
-        self.nlayers = nlayers  # 追加: nlayersを保存
+        self.nlayers = nlayers 
         self.max_len = max_len
         
         self.embedding = nn.Embedding(nchar, nhid)
@@ -82,7 +82,7 @@ class TransformerModel(nn.Module):
         return mask
     
     def forward(self, input_seq, mask=None, use_causal_mask=True):
-        if input_seq.dim() == 1:  # 修正: dim -> dim()
+        if input_seq.dim() == 1:
             input_seq = input_seq.unsqueeze(0)  # バッチ次元を追加
             single_sequence = True
         else:
