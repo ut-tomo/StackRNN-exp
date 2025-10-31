@@ -74,7 +74,7 @@ class StackRNN(nn.Module):
         
         self.hid2out = nn.Linear(self.nhid, self.n_out, bias=False)
         
-    def _initialize_weights(self):
+    def _init_weights(self):
         """Initialize weights using specified initialization method."""
         
         # Define initialization functions
@@ -224,6 +224,17 @@ class StackRNN(nn.Module):
         """
         device = next(self.parameters()).device
         
+        if training:
+            # TBPTT 用：一つ前の状態を計算グラフから切り離しつつ「現在の変数」は生かす
+            old_hidden = self.hidden.detach().clone()
+            old_stacks = [s.detach().clone() for s in self.stacks]
+        else:
+            # 完全切断：内部状態も detach してから使用
+            self.hidden = self.hidden.to(device).detach()
+            self.stacks = [stk.to(device).detach() for stk in self.stacks]
+            old_hidden = self.hidden.clone()
+            old_stacks = [stk.clone() for stk in self.stacks]
+            
         for s in range(self.n_stack):
             self.stacks[s] = self.stacks[s].to(device).detach()
         self.hidden = self.hidden.to(device).detach()
