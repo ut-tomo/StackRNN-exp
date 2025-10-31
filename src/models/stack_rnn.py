@@ -23,6 +23,8 @@ class StackRNN(nn.Module):
     def __init__(self, nchar, nhid, nstack=10, stack_size=200, depth=2, 
                  mod=1, use_noop=False, bptt=50, reg=0.0, init_method='xavier'):
         super().__init__()
+        self.init_method = init_method
+
         
         self.nchar = nchar
         self.n_in = nchar
@@ -53,23 +55,24 @@ class StackRNN(nn.Module):
         self.reset_state()
         
     def _create_layers(self):
+        #in2hid: 論文のU, hid2hid: 論文のR, stack2hid: 論文のP
         self.in2hid = nn.Linear(self.n_in, self.nhid, bias=False)
         self.hid2hid = nn.Linear(self.nhid, self.nhid, bias=False)
 
         self.hid2act = nn.ModuleList([
-            nn.Linear(self.n_hid, self.n_action, bias=False) 
+            nn.Linear(self.nhid, self.n_action, bias=False) 
             for _ in range(self.n_stack)
         ])
         self.hid2stack = nn.ModuleList([
-            nn.Linear(self.n_hid, self.stack_size, bias=False)
+            nn.Linear(self.nhid, self.stack_size, bias=False)
             for _ in range(self.n_stack)
         ])
         self.stack2hid = nn.ModuleList([
-            nn.Linear(self.stack_size, self.n_hid, bias=False)
+            nn.Linear(self.stack_size, self.nhid, bias=False)
             for _ in range(self.n_stack)
         ])
         
-        self.hid2out = nn.Linear(self.n_hid, self.n_out, bias=False)
+        self.hid2out = nn.Linear(self.nhid, self.n_out, bias=False)
         
     def _initialize_weights(self):
         """Initialize weights using specified initialization method."""
@@ -164,8 +167,189 @@ class StackRNN(nn.Module):
                  + p_pop  * pop_buf[i]
                  + p_noop * stack[i];
                  
-        行列演算として表現するには, まずは depth以降の0マスクが必要.
+        行列演算として表現するには, depth以降の0マスクが必要.
         その上で適切に要素をシフトし上位の段を連続的に計算する.
         """
         
+        push_matrix = torch.zeros(self.stack_size, self.stack_size)
+        for i in range(self.top_of_stack + 1, self.stack_size):
+            push_matrix[i, i-1] = 1.0 #対角線の1つ下に1 -> 元ベクトルを一段下にシフト
+        self.register_buffer('push_matrix', push_matrix)
         
+        pop_matrix = torch.zeros(self.stack_size, self.stack_size)
+        for i in range(self.top_of_stack, self.stack_size - 1):
+            pop_matrix[i, i+1] = 1.0 #対角線の1つ上に1 -> 元ベクトルを一段上にシフト
+        self.register_buffer('pop_matrix', pop_matrix)
+        
+        noop_matrix = torch.eye(self.stack_size)
+        noop_matrix[:self.top_of_stack, :] = 0
+        self.register_buffer('noop_matrix', noop_matrix)
+        
+    def reset_state(self):
+        """Reset internal states for new seq"""
+        self.count = 0
+        
+        self.stacks = []
+        for s in range(self.n_stack):
+            stack = torch.full((self.stack_size,), -1.0, dtype=torch.float32)
+            self.stacks.append(stack)
+        
+        self.hidden = torch.zeros(self.nhid, dtype=torch.float32)
+        self.is_emptied = True
+        self.step_count = 0
+    
+    def empty_stacks(self):
+        """Empty all stacks (reset to -1.0)."""
+        self.count = 0
+        self.is_emptied = True
+        self.step_count = 0
+        for s in range(self.n_stack):
+            self.stacks[s].fill_(-1.0)
+            
+    def forward_step(self, cur_input, target, is_hard=False, training=True):
+        """
+        Single forward step with gradient control for online learning.
+        
+        Args:
+            cur_input: Current input token (integer)
+            target: Target output token (integer)
+            is_hard: Whether to use hard (discretized) actions
+            training: If True, detach for single-step gradients; if False, detach completely
+            
+        Returns:
+            output_probs: Output probability distribution
+            loss: Cross-entropy loss for this step
+            
+        h_t = sigmoid( U x_t + R h_t-1 + P s_t-1 ^k )    を計算したい
+        """
+        device = next(self.parameters()).device
+        
+        for s in range(self.n_stack):
+            self.stacks[s] = self.stacks[s].to(device).detach()
+        self.hidden = self.hidden.to(device).detach()
+        
+        old_hidden = self.hidden.clone()
+        old_stacks = [stack.clone() for stack in self.stacks]
+        
+        self.count += 1
+        self.is_emptied = False
+        self.step_count += 1
+        
+        # Input の one-hot エンコーディング -> hidden state
+        input_one_hot = torch.zeros(self.nchar, device=device)
+        input_one_hot[cur_input] = 1.0
+        self.hidden = self.in2hid(input_one_hot)
+        
+        if self.mod != 0:
+            for s in range(self.n_stack):
+                # P s_t-1 ^k 部分
+                stack_slice = old_stacks[s][self.top_of_stack:self.top_of_stack + self.depth]
+                weight_slice = self.stack2hid[s].weight[:, self.top_of_stack:self.top_of_stack + self.depth]
+                hidden_contrib = weight_slice @ stack_slice
+                self.hidden += hidden_contrib
+        
+        if self.mod == 2:
+            self.hidden += self.hid2hid(old_hidden)
+        
+        self.hidden = torch.sigmoid(self.hidden)
+        
+        new_stacks = []
+        
+        # 連続的な書き込み 計算済みのシフト行列を使用
+        # s_t[i] = a_t[PUSH] s_t-1[i-1] + a_t[POP]s_t-1[i+1] (+ a_t[NOOP] s_t-1[i] )
+        
+        for s in range(self.n_stack):
+            action_logits = self.hid2act[s](self.hidden)
+            actions = F.softmax(action_logits, dim=0)
+            
+            if is_hard:
+                # argmax 離散化
+                im = torch.argmax(actions).item()
+                actions = torch.zeros_like(actions)
+                actions[im] = 1.0
+                
+            # Action 確信度
+            pop_weight = actions[0]
+            push_weight = actions[1]
+            noop_weight = actions[2] if self.n_action == 3 else torch.tensor(0.0, device=device)
+            
+            old_stack = old_stacks[s]
+            
+            pushed_stack = self.push_matrix @ old_stack
+            
+            # new top element
+            top_input = self.hid2stack[s].weight[self.top_of_stack, :] @ self.hidden
+            top_input = torch.clamp(top_input, -50.0, 50.0)  # Numerical stability
+            top_value = torch.sigmoid(top_input)
+            pushed_stack[self.top_of_stack] = top_value
+            
+            popped_stack = self.pop_matrix @ old_stack
+            popped_stack[self.stack_size - 1] = -1.0  # Empty value at bottom
+            
+            # Noop: 
+            noop_stack = self.noop_matrix @ old_stack
+            
+            # soft operation の統合
+            new_stack = (push_weight * pushed_stack + 
+                        pop_weight * popped_stack + 
+                        noop_weight * noop_stack)
+            
+            new_stacks.append(new_stack)
+            
+        for s in range(self.n_stack):
+            self.stacks[s] = new_stacks[s]
+        
+
+        output_logits = self.hid2out(self.hidden)
+        output_probs = F.softmax(output_logits, dim=0)
+        
+
+        loss = -torch.log(output_probs[target] + 1e-10)
+        
+        # Regularization (Not used in ref paper)
+        if self.reg > 0 and training:
+            l2_reg = 0.0
+            for param in self.parameters():
+                l2_reg += torch.sum(param ** 2)
+            loss = loss + self.reg * l2_reg
+        
+        return output_probs, loss
+    
+    def detach_hidden_states(self):
+        self.hidden = self.hidden.detach()
+        for s in range(self.n_stack):
+            self.stacks[s] = self.stacks[s].detach()
+        self.step_count = 0
+        
+    def forward(self, input_sequence, is_hard=False):
+        output_probs_list = []
+        
+        for i in range(len(input_sequence) - 1):
+            cur_input = input_sequence[i]
+            target = input_sequence[i + 1]
+            
+            output_probs, _ = self.forward_step(cur_input, target, is_hard=is_hard, training=False)
+            output_probs_list.append(output_probs)
+        
+        return output_probs_list
+    
+    def get_model_info(self):
+        """Get model information for logging."""
+        total_params = sum(p.numel() for p in self.parameters())
+        trainable_params = sum(p.numel() for p in self.parameters() if p.requires_grad)
+        
+        return {
+            'model_type': 'Stack-RNN',
+            'nchar': self.nchar,
+            'nhid': self.nhid,
+            'nstack': self.nstack,
+            'stack_size': self.stack_size,
+            'depth': self.depth,
+            'mod': self.mod,
+            'use_noop': self.use_noop,
+            'n_action': self.n_action,
+            'init_method': self.init_method,
+            'total_params': total_params,
+            'trainable_params': trainable_params,
+        }
+
