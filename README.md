@@ -22,14 +22,18 @@ StackRNN-exp/
 │   │       ├── transformer_model.py # Transformerベースライン
 │   │       └── mamba_model.py      # Mambaベースライン
 │   ├── data/
+        ├── data_utils.py
 │   │   └── tasks.py                # 形式言語タスク生成
 │   ├── training/
-│   │   └── train_baseline.py      # ベースラインモデル学習スクリプト
-│   ├── func_test/
+        ├──stack-rnn_trainer.py
+│   │   └── baseline_trainer.py      # ベースラインモデル学習スクリプト
+│   ├── func_test/                  # FOR DEBUG
 │   │   ├── test_lstm.py            # LSTMテスト
 │   │   ├── test_transformer.py    # Transformerテスト
 │   │   └── test_mamba.py          # Mambaテスト
 │   └── config/                     # 設定ファイル
+│       ├── task_config.py
+│       └── training_config.py
 ├── cpp_ref/                        # C++参照実装
 └── README.md
 ```
@@ -39,9 +43,9 @@ StackRNN-exp/
 形式言語学習タスク（`src/data/tasks.py`）：
 
 1. **Task 1**: $a^n b^n c^n ...$ - カウンティングタスク（文字数可変）
-2. **Task 2**: $a^n b^{kn}$ - 繰り返しパターン（$k$は指定可能）
+2. **Task 2**: $a^n b^{kn}$ - 繰り返しパターン
 3. **Task 3**: $a^n b^m c^{n+m}$ - 加算タスク
-4. **Task 4**: Memorization - 文字列の記憶と逆順再生
+4. **Task 4**: Memorization - 文字列の記憶, 逆順再生
 5. **Task 5**: $a^n b^k c^{nk}$ - 乗算タスク
 6. **Task 6**: $a^n b^m c^n d^m$ - 交差構造パターン
 7. **Addition**: Binary Addition
@@ -52,17 +56,17 @@ StackRNN-exp/
 
 - **LSTM**: 標準的なLSTM
 - **Transformer**: 自己注意機構ベースのモデル（因果的マスク付き）
-- **Mamba**: State Space Model (SSM) ベースの効率的なモデル
+- **Mamba**: SSMモデルは他にも試す価値あり
 
 
 
 
 ## 今後の予定
 
-- [ ] Stack-RNN本体の実装完成
 - [ ] Neural Turing Machine (NTM) 的設計による Unbouded Memory の再帰型NNを実装
 - [ ] 逆ポーランド記法タスク
 - [ ] 括弧マッチングタスク
+
 
 ## 参考文献
 
