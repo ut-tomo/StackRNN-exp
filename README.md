@@ -50,7 +50,7 @@ StackRNN-exp/
 
 以下の3つのベースラインモデルを実装：
 
-- **LSTM**: 標準的なLong Short-Term Memory
+- **LSTM**: 標準的なLSTM
 - **Transformer**: 自己注意機構ベースのモデル（因果的マスク付き）
 - **Mamba**: State Space Model (SSM) ベースの効率的なモデル
 
@@ -60,7 +60,7 @@ StackRNN-exp/
 ## 今後の予定
 
 - [ ] Stack-RNN本体の実装完成
-- [ ] Neural Turing Machine (NTM) の実装再現
+- [ ] Neural Turing Machine (NTM) 的設計による Unbouded Memory の再帰型NNを実装
 - [ ] 逆ポーランド記法タスク
 - [ ] 括弧マッチングタスク
 

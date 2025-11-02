@@ -74,13 +74,14 @@ def task6(nmax, nmin, nchar=4):
     p = [0] * n + [1] * m + [2] * n + [3] * m
     return ''.join(chr(ord('a') + v) for v in p)
 
-def task7(nmax, nmin, base):
+#C++ではbaseを入力で受けてる, なんで？
+def task7(nmax, nmin, base=2):
     """
     Binary Addition Task
     Generate addition sequence like n+m=result.
     """
-    if base < 2:
-        raise ValueError("base must be >= 2")
+    if base != 2:
+        raise ValueError("base must be = 2")
     
     tln = random.randint(nmin, nmax-1) if nmax > nmin else nmin
     ln = random.randint(0, tln)
