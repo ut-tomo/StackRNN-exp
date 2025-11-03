@@ -1,3 +1,8 @@
+"""
+Task Configurations for StackRNN
+
+TODO: make configs for baselines
+"""
 TASK_CONFIGS = {
     1: {
         'name': 'Basic Counting (a^nb^n...)',

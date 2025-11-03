@@ -31,8 +31,8 @@ def task3(nmax, nmin, nchar=3):
     """
     n = random.randint(nmin, nmax-1 if nmax > nmin else nmin) # a, b合計の個数
     m = random.randint(1, max(1, n-1)) # bの個数
-    n = n - m 
-    p = [0] * n + [1] * m + [random.randint(2, nchar-2)] * (n + m)
+    n = n - m
+    p = [0] * n + [1] * m + [random.randint(2, min(2, nchar-1))] * (n + m)
     return ''.join(chr(ord('a') + v) for v in p)
     
 def task4(nmax, nmin, nchar):
@@ -58,7 +58,7 @@ def task5(nmax, nmin, nchar=3):
     n = random.randint(nmin, nmax-1 if nmax > nmin else nmin) # a, b合計の個数
     k = random.randint(1, max(1, n-1)) # bの個数
     n = n - k
-    p = [0] * n + [1] * k + [random.randint(2, nchar-2)] * (n * k)
+    p = [0] * n + [1] * k + [random.randint(2, min(2, nchar-1))] * (n * k)
     return ''.join(chr(ord('a') + v) for v in p)
 
 def task6(nmax, nmin, nchar=4):

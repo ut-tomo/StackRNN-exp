@@ -1,0 +1,19 @@
+Baseline Model Training - LSTM
+Task: 1, nchar: 2
+Model info: {'model_type': 'LSTM', 'nchar': 2, 'nhid': 10, 'nlayers': 1, 'total_params': 922, 'trainable_params': 922}
+Configuration: TrainingConfig(
+  lr=0.1, lr_decay=0.5, lr_min=1e-05
+  nepoch=100, nseq=2000, nmax=50
+  curriculum=True, start=3
+  bptt=50, nreset=1000
+  seed=42, device=cpu
+)
+
+
+======================================================================
+Starting training: LSTM on Task 1
+======================================================================
+
+  [Curriculum] Epoch 0: nmax = 50
+Epoch   0 | Train Loss: 0.0944 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 6.48s | LR: 1.00e-01
+  [Curriculum] Epoch 1: nmax = 50
