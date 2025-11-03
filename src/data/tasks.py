@@ -136,6 +136,6 @@ def generate_next_sequence(nmax, nmin, nchar, nrep, ntask):
     elif ntask == 6:
         return task6(nmax, nmin, nchar)
     elif ntask == 7:
-        return task7(nmax, nmin, nchar)
+        return task7(nmax, nmin, base=2)  # Task 7 always uses base 2
     else:
         return task1(nmax, nmin, nchar)

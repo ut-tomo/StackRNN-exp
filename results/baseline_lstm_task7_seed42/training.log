@@ -1,0 +1,59 @@
+Baseline Model Training - LSTM
+Task: 7, nchar: 5
+Model info: {'model_type': 'LSTM', 'nchar': 5, 'nhid': 10, 'nlayers': 1, 'total_params': 985, 'trainable_params': 985}
+Configuration: TrainingConfig(
+  lr=0.1, lr_decay=0.5, lr_min=1e-05
+  nepoch=100, nseq=2000, nmax=15
+  curriculum=True, start=3
+  bptt=50, nreset=1000
+  seed=42, device=cpu
+)
+
+
+======================================================================
+Starting training: LSTM on Task 7
+======================================================================
+
+  [Curriculum] Epoch 0: nmax = 15
+Epoch   0 | Train Loss: 1.0200 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 2.71s | LR: 1.00e-01
+  [Curriculum] Epoch 1: nmax = 15
+Epoch   1 | Train Loss: 1.0979 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 2.63s | LR: 1.00e-01
+  [Curriculum] Epoch 2: nmax = 15
+Epoch   2 | Train Loss: 1.1425 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 2.64s | LR: 1.00e-01
+  [Curriculum] Epoch 3: nmax = 15
+Epoch   3 | Train Loss: 1.1388 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 2.59s | LR: 1.00e-01
+  [Curriculum] Epoch 4: nmax = 15
+Epoch   4 | Train Loss: 1.1529 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 2.62s | LR: 1.00e-01
+  [Curriculum] Epoch 5: nmax = 15
+Epoch   5 | Train Loss: 1.1561 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 2.80s | LR: 1.00e-01
+  [Curriculum] Epoch 6: nmax = 15
+Epoch   6 | Train Loss: 1.1560 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 2.66s | LR: 1.00e-01
+  [Curriculum] Epoch 7: nmax = 15
+Epoch   7 | Train Loss: 1.1447 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 2.67s | LR: 5.00e-02
+  [Curriculum] Epoch 8: nmax = 15
+Epoch   8 | Train Loss: 1.1454 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 2.65s | LR: 5.00e-02
+  [Curriculum] Epoch 9: nmax = 15
+Epoch   9 | Train Loss: 1.1481 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 2.67s | LR: 5.00e-02
+  [Curriculum] Epoch 10: nmax = 15
+Epoch  10 | Train Loss: 1.1445 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 2.73s | LR: 5.00e-02
+  [Curriculum] Epoch 11: nmax = 15
+Epoch  11 | Train Loss: 1.1456 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 2.67s | LR: 5.00e-02
+  [Curriculum] Epoch 12: nmax = 15
+Epoch  12 | Train Loss: 1.1452 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 2.69s | LR: 5.00e-02
+  [Curriculum] Epoch 13: nmax = 16
+Epoch  13 | Train Loss: 1.1252 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 2.82s | LR: 2.50e-02
+  [Curriculum] Epoch 14: nmax = 17
+Epoch  14 | Train Loss: 1.1193 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 2.85s | LR: 2.50e-02
+Epoch  15 | Train Loss: 1.1176 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 2.91s | LR: 2.50e-02
+Epoch  16 | Train Loss: 1.1037 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 3.05s | LR: 2.50e-02
+Epoch  17 | Train Loss: 1.0919 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 3.24s | LR: 2.50e-02
+Epoch  18 | Train Loss: 1.0851 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 3.50s | LR: 2.50e-02
+Epoch  19 | Train Loss: 1.0770 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 3.59s | LR: 1.25e-02
+Epoch  20 | Train Loss: 1.0656 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 3.89s | LR: 1.25e-02
+
+  → No improvement for 20 epochs, stopping training
+
+Best model saved to results/baseline_lstm_task7_seed42/model_lstm_ntask7_nchar5_seed42.pt
+Best Val Loss: 0.0000, Best Val Acc: 0.0000
+
+Training completed!

@@ -178,7 +178,7 @@ class BaselineTrainer:
 
     def _validate(self):
         """Validate using BaselineValidator."""
-        from src.evaluation import BaselineValidator
+        from src.validation import BaselineValidator
         
         if not hasattr(self, '_baseline_validator'):
             self._baseline_validator = BaselineValidator(

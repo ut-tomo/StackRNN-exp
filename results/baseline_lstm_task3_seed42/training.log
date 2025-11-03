@@ -15,3 +15,45 @@ Starting training: LSTM on Task 3
 ======================================================================
 
   [Curriculum] Epoch 0: nmax = 50
+Epoch   0 | Train Loss: 0.1619 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 7.82s | LR: 1.00e-01
+  [Curriculum] Epoch 1: nmax = 50
+Epoch   1 | Train Loss: 0.1605 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 7.13s | LR: 1.00e-01
+  [Curriculum] Epoch 2: nmax = 50
+Epoch   2 | Train Loss: 0.1607 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 7.04s | LR: 1.00e-01
+  [Curriculum] Epoch 3: nmax = 50
+Epoch   3 | Train Loss: 0.1646 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 6.85s | LR: 1.00e-01
+  [Curriculum] Epoch 4: nmax = 50
+Epoch   4 | Train Loss: 0.1671 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 6.57s | LR: 1.00e-01
+  [Curriculum] Epoch 5: nmax = 50
+Epoch   5 | Train Loss: 0.1598 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 7.02s | LR: 1.00e-01
+  [Curriculum] Epoch 6: nmax = 50
+Epoch   6 | Train Loss: 0.1617 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 7.02s | LR: 1.00e-01
+  [Curriculum] Epoch 7: nmax = 50
+Epoch   7 | Train Loss: 0.1549 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 6.87s | LR: 5.00e-02
+  [Curriculum] Epoch 8: nmax = 50
+Epoch   8 | Train Loss: 0.1575 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 6.78s | LR: 5.00e-02
+  [Curriculum] Epoch 9: nmax = 50
+Epoch   9 | Train Loss: 0.1582 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 6.78s | LR: 5.00e-02
+  [Curriculum] Epoch 10: nmax = 50
+Epoch  10 | Train Loss: 0.1593 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 6.61s | LR: 5.00e-02
+  [Curriculum] Epoch 11: nmax = 50
+Epoch  11 | Train Loss: 0.1580 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 6.57s | LR: 5.00e-02
+  [Curriculum] Epoch 12: nmax = 50
+Epoch  12 | Train Loss: 0.1568 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 6.63s | LR: 5.00e-02
+  [Curriculum] Epoch 13: nmax = 50
+Epoch  13 | Train Loss: 0.1558 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 6.65s | LR: 2.50e-02
+  [Curriculum] Epoch 14: nmax = 50
+Epoch  14 | Train Loss: 0.1555 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 6.66s | LR: 2.50e-02
+Epoch  15 | Train Loss: 0.1574 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 6.59s | LR: 2.50e-02
+Epoch  16 | Train Loss: 0.1517 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 6.82s | LR: 2.50e-02
+Epoch  17 | Train Loss: 0.1548 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 6.61s | LR: 2.50e-02
+Epoch  18 | Train Loss: 0.1583 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 6.76s | LR: 2.50e-02
+Epoch  19 | Train Loss: 0.1519 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 6.81s | LR: 1.25e-02
+Epoch  20 | Train Loss: 0.1535 | Val Loss: 0.0000 | Val Acc: 0.0000 | Time: 7.14s | LR: 1.25e-02
+
+  → No improvement for 20 epochs, stopping training
+
+Best model saved to results/baseline_lstm_task3_seed42/model_lstm_ntask3_nchar3_seed42.pt
+Best Val Loss: 0.0000, Best Val Acc: 0.0000
+
+Training completed!
