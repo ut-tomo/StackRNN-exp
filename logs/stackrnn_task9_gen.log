@@ -15,115 +15,17 @@ Starting training: Task 9
 ======================================================================
 
   [Curriculum] Epoch 0: nmax = 3
-Epoch   0 |  Train loss = 1.0733 | Val loss = 1.4285 | Val acc = 0.7400 | Time: 10.44s | LR: 1.00e-01
+Epoch   0 |  Train loss = 1.0832 | Val loss = 1.4762 | Val acc = 0.2350 | Time: 9.61s | LR: 1.00e-01
   [Curriculum] Epoch 1: nmax = 4
-Epoch   1 |  Train loss = 1.0403 | Val loss = 1.3500 | Val acc = 0.6200 | Time: 11.39s | LR: 1.00e-01
+Epoch   1 |  Train loss = 1.0568 | Val loss = 1.3129 | Val acc = 0.2350 | Time: 9.79s | LR: 1.00e-01
   [Curriculum] Epoch 2: nmax = 5
-Epoch   2 |  Train loss = 1.0586 | Val loss = 1.2723 | Val acc = 0.4650 | Time: 12.01s | LR: 1.00e-01
+Epoch   2 |  Train loss = 1.0802 | Val loss = 1.2965 | Val acc = 0.2350 | Time: 10.35s | LR: 1.00e-01
   [Curriculum] Epoch 3: nmax = 6
-Epoch   3 |  Train loss = 1.0683 | Val loss = 1.2250 | Val acc = 0.3950 | Time: 12.22s | LR: 1.00e-01
+Epoch   3 |  Train loss = 1.0933 | Val loss = 1.2145 | Val acc = 0.2300 | Time: 11.28s | LR: 1.00e-01
   [Curriculum] Epoch 4: nmax = 7
-Epoch   4 |  Train loss = 1.1064 | Val loss = 1.2475 | Val acc = 0.5000 | Time: 13.89s | LR: 1.00e-01
+Epoch   4 |  Train loss = 1.1156 | Val loss = 1.2393 | Val acc = 0.1000 | Time: 12.29s | LR: 1.00e-01
   [Curriculum] Epoch 5: nmax = 8
-Epoch   5 |  Train loss = 1.1222 | Val loss = 1.2114 | Val acc = 0.5050 | Time: 16.12s | LR: 1.00e-01
+Epoch   5 |  Train loss = 1.1274 | Val loss = 1.2229 | Val acc = 0.2350 | Time: 13.22s | LR: 1.00e-01
   [Curriculum] Epoch 6: nmax = 9
-Epoch   6 |  Train loss = 1.1286 | Val loss = 1.1674 | Val acc = 0.3300 | Time: 15.63s | LR: 1.00e-01
+Epoch   6 |  Train loss = 1.1330 | Val loss = 1.1706 | Val acc = 0.1200 | Time: 13.89s | LR: 1.00e-01
   [Curriculum] Epoch 7: nmax = 10
-Epoch   7 |  Train loss = 1.1254 | Val loss = 1.1575 | Val acc = 0.2800 | Time: 16.93s | LR: 1.00e-01
-  [Curriculum] Epoch 8: nmax = 11
-Epoch   8 |  Train loss = 1.1329 | Val loss = 1.1626 | Val acc = 0.2850 | Time: 18.19s | LR: 1.00e-01
-  [Curriculum] Epoch 9: nmax = 12
-Epoch   9 |  Train loss = 1.1389 | Val loss = 1.1562 | Val acc = 0.3800 | Time: 19.64s | LR: 1.00e-01
-  [Curriculum] Epoch 10: nmax = 13
-Epoch  10 |  Train loss = 1.1401 | Val loss = 1.1518 | Val acc = 0.2950 | Time: 21.72s | LR: 1.00e-01
-  [Curriculum] Epoch 11: nmax = 14
-Epoch  11 |  Train loss = 1.1374 | Val loss = 1.1601 | Val acc = 0.2600 | Time: 22.84s | LR: 1.00e-01
-  → LR decayed to 5.00e-02
-  → Restored best model from epoch 10
-  [Curriculum] Epoch 12: nmax = 15
-Epoch  12 |  Train loss = 1.1342 | Val loss = 1.1579 | Val acc = 0.2900 | Time: 24.25s | LR: 5.00e-02
-  → LR decayed to 2.50e-02
-  → Restored best model from epoch 10
-  [Curriculum] Epoch 13: nmax = 16
-Epoch  13 |  Train loss = 1.1330 | Val loss = 1.1516 | Val acc = 0.2450 | Time: 25.79s | LR: 2.50e-02
-  [Curriculum] Epoch 14: nmax = 17
-Epoch  14 |  Train loss = 1.1349 | Val loss = 1.1415 | Val acc = 0.2350 | Time: 26.21s | LR: 2.50e-02
-Epoch  15 |  Train loss = 1.1311 | Val loss = 1.1418 | Val acc = 0.2650 | Time: 26.86s | LR: 2.50e-02
-  → LR decayed to 1.25e-02
-  → Restored best model from epoch 14
-Epoch  16 |  Train loss = 1.1308 | Val loss = 1.1395 | Val acc = 0.2900 | Time: 27.83s | LR: 1.25e-02
-Epoch  17 |  Train loss = 1.1289 | Val loss = 1.1414 | Val acc = 0.2650 | Time: 29.99s | LR: 1.25e-02
-  → LR decayed to 6.25e-03
-  → Restored best model from epoch 16
-Epoch  18 |  Train loss = 1.1284 | Val loss = 1.1404 | Val acc = 0.2600 | Time: 29.80s | LR: 6.25e-03
-  → LR decayed to 3.13e-03
-  → Restored best model from epoch 16
-Epoch  19 |  Train loss = 1.1281 | Val loss = 1.1400 | Val acc = 0.2500 | Time: 31.06s | LR: 3.13e-03
-  → LR decayed to 1.56e-03
-  → Restored best model from epoch 16
-Epoch  20 |  Train loss = 1.1279 | Val loss = 1.1398 | Val acc = 0.2500 | Time: 30.67s | LR: 1.56e-03
-  → LR decayed to 7.81e-04
-  → Restored best model from epoch 16
-Epoch  21 |  Train loss = 1.1278 | Val loss = 1.1397 | Val acc = 0.2500 | Time: 31.91s | LR: 7.81e-04
-  → LR decayed to 3.91e-04
-  → Restored best model from epoch 16
-Epoch  22 |  Train loss = 1.1277 | Val loss = 1.1396 | Val acc = 0.2500 | Time: 31.49s | LR: 3.91e-04
-  → LR decayed to 1.95e-04
-  → Restored best model from epoch 16
-Epoch  23 |  Train loss = 1.1277 | Val loss = 1.1396 | Val acc = 0.2500 | Time: 30.56s | LR: 1.95e-04
-  → LR decayed to 9.77e-05
-  → Restored best model from epoch 16
-Epoch  24 |  Train loss = 1.1277 | Val loss = 1.1396 | Val acc = 0.2500 | Time: 30.40s | LR: 9.77e-05
-  → LR decayed to 4.88e-05
-  → Restored best model from epoch 16
-Epoch  25 |  Train loss = 1.1277 | Val loss = 1.1396 | Val acc = 0.2500 | Time: 31.75s | LR: 4.88e-05
-  → LR decayed to 2.44e-05
-  → Restored best model from epoch 16
-Epoch  26 |  Train loss = 1.1277 | Val loss = 1.1396 | Val acc = 0.2500 | Time: 30.68s | LR: 2.44e-05
-  → LR decayed to 1.22e-05
-  → Restored best model from epoch 16
-Epoch  27 |  Train loss = 1.1277 | Val loss = 1.1396 | Val acc = 0.2500 | Time: 30.58s | LR: 1.22e-05
-  → LR decayed to 6.10e-06
-  → Restored best model from epoch 16
-
-  → LR < 1e-05, stopping training
-
-Best model saved to ./results/stackrnn_generalization/task9_trainmax20/model_ntask9_nchar4_nhid40_nstack10_seed1.pt
-Best Val Loss: 1.1395, Best Val Acc: 0.2900
-
-Training completed!
-
-======================================================================
-Training completed
-Best validation loss: 1.1395
-Best validation accuracy: 0.2900
-Final epoch: 27
-======================================================================
-
-Evaluating generalization on different sequence lengths...
-  Evaluating on nmax=2... Loss: 1.1396, Acc: 0.2500
-  Evaluating on nmax=3... Loss: 1.1396, Acc: 0.2500
-  Evaluating on nmax=4... Loss: 1.1396, Acc: 0.2500
-  Evaluating on nmax=5... Loss: 1.1396, Acc: 0.2500
-  Evaluating on nmax=6... Loss: 1.1396, Acc: 0.2500
-  Evaluating on nmax=7... Loss: 1.1396, Acc: 0.2500
-  Evaluating on nmax=8... Loss: 1.1396, Acc: 0.2500
-  Evaluating on nmax=9... Loss: 1.1396, Acc: 0.2500
-  Evaluating on nmax=10... Loss: 1.1396, Acc: 0.2500
-  Evaluating on nmax=11... Loss: 1.1396, Acc: 0.2500
-  Evaluating on nmax=12... Loss: 1.1396, Acc: 0.2500
-  Evaluating on nmax=13... Loss: 1.1396, Acc: 0.2500
-  Evaluating on nmax=14... Loss: 1.1396, Acc: 0.2500
-  Evaluating on nmax=15... Loss: 1.1396, Acc: 0.2500
-  Evaluating on nmax=16... Loss: 1.1396, Acc: 0.2500
-  Evaluating on nmax=17... Loss: 1.1396, Acc: 0.2500
-  Evaluating on nmax=18... Loss: 1.1396, Acc: 0.2500
-  Evaluating on nmax=19... Loss: 1.1396, Acc: 0.2500
-  Evaluating on nmax=20... Loss: 1.1396, Acc: 0.2500
-  Evaluating on nmax=21... Loss: 1.1393, Acc: 0.2400
-  Evaluating on nmax=22... Loss: 1.1469, Acc: 0.2550
-  Evaluating on nmax=23... Loss: 1.1439, Acc: 0.2400
-  Evaluating on nmax=24... Loss: 1.1354, Acc: 0.2500
-  Evaluating on nmax=25... Loss: 1.1404, Acc: 0.2800
-  Evaluating on nmax=26... Loss: 1.1264, Acc: 0.2650
-  Evaluating on nmax=27... 
