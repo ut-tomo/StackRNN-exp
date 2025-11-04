@@ -69,6 +69,8 @@ class Validator:
                     total_loss += loss.item()
                     total_chars += 1
                     
+                    # Check if we should start evaluation based on task-specific conditions
+                    # C++ train_toy.cpp line 501-508
                     if not is_eval:
                         if ((task_id == 1 and cur == 0 and next_char != 0) or
                             (task_id == 2 and cur == 0 and next_char != 0) or
@@ -76,7 +78,8 @@ class Validator:
                             (task_id == 4 and next_char == 0) or
                             (task_id == 5 and cur == nchar - 2 and next_char == nchar - 1) or
                             (task_id == 6 and cur == 1 and next_char == 2) or
-                            (task_id == 9 and cur == 1 and next_char == 2)):
+                            (task_id == 8 and ip > 0 and sequence[ip-1] == '=') or  # Task 8: after '=' marker
+                            (task_id == 9 and ip == len(sequence) - 1)):  # Task 9: only evaluate the last character (label)
                             is_eval = True
                     
                     # Count accuracy only during evaluation period

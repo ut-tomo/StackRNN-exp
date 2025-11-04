@@ -1,0 +1,39 @@
+Stack-RNN Training
+Task: 9, nchar: 4
+Model parameters: 162720
+Configuration: TrainingConfig(
+  lr=0.1, lr_decay=0.5, lr_min=1e-05
+  nepoch=100, nseq=2000, nmax=20
+  curriculum=True, start=3
+  bptt=50, nreset=1000
+  seed=1, device=cpu
+)
+
+
+======================================================================
+Starting training: Task 9
+======================================================================
+
+  [Curriculum] Epoch 0: nmax = 3
+Epoch   0 |  Train loss = 1.0733 | Val loss = 1.4285 | Val acc = 0.7400 | Time: 10.44s | LR: 1.00e-01
+  [Curriculum] Epoch 1: nmax = 4
+Epoch   1 |  Train loss = 1.0403 | Val loss = 1.3500 | Val acc = 0.6200 | Time: 11.39s | LR: 1.00e-01
+  [Curriculum] Epoch 2: nmax = 5
+Epoch   2 |  Train loss = 1.0586 | Val loss = 1.2723 | Val acc = 0.4650 | Time: 12.01s | LR: 1.00e-01
+  [Curriculum] Epoch 3: nmax = 6
+Epoch   3 |  Train loss = 1.0683 | Val loss = 1.2250 | Val acc = 0.3950 | Time: 12.22s | LR: 1.00e-01
+  [Curriculum] Epoch 4: nmax = 7
+Epoch   4 |  Train loss = 1.1064 | Val loss = 1.2475 | Val acc = 0.5000 | Time: 13.89s | LR: 1.00e-01
+  [Curriculum] Epoch 5: nmax = 8
+Epoch   5 |  Train loss = 1.1222 | Val loss = 1.2114 | Val acc = 0.5050 | Time: 16.12s | LR: 1.00e-01
+  [Curriculum] Epoch 6: nmax = 9
+Epoch   6 |  Train loss = 1.1286 | Val loss = 1.1674 | Val acc = 0.3300 | Time: 15.63s | LR: 1.00e-01
+  [Curriculum] Epoch 7: nmax = 10
+Epoch   7 |  Train loss = 1.1254 | Val loss = 1.1575 | Val acc = 0.2800 | Time: 16.93s | LR: 1.00e-01
+  [Curriculum] Epoch 8: nmax = 11
+Epoch   8 |  Train loss = 1.1329 | Val loss = 1.1626 | Val acc = 0.2850 | Time: 18.19s | LR: 1.00e-01
+  [Curriculum] Epoch 9: nmax = 12
+Epoch   9 |  Train loss = 1.1389 | Val loss = 1.1562 | Val acc = 0.3800 | Time: 19.64s | LR: 1.00e-01
+  [Curriculum] Epoch 10: nmax = 13
+Epoch  10 |  Train loss = 1.1401 | Val loss = 1.1518 | Val acc = 0.2950 | Time: 21.72s | LR: 1.00e-01
+  [Curriculum] Epoch 11: nmax = 14

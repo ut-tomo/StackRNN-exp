@@ -39,7 +39,7 @@ def get_task_config(task_id):
         6: {'nchar': 4, 'nmax': 50, 'curriculum_start': 3, 'description': 'a^nb^mc^nd^m'},
         7: {'nchar': 5, 'nmax': 15, 'curriculum_start': 3, 'description': 'Binary Addition'},
         8: {'nchar': 4, 'nmax': 30, 'curriculum_start': 3, 'description': 'Reverse Polish Notation'},
-        9: {'nchar': 3, 'nmax': 40, 'curriculum_start': 3, 'description': 'Balanced Parentheses (3 chars)'},
+        9: {'nchar': 4, 'nmax': 40, 'curriculum_start': 3, 'description': 'Balanced Parentheses Classification'},
     }
     return task_configs.get(task_id, task_configs[1])
 

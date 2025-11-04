@@ -81,7 +81,8 @@ class BaselineValidator:
                             (task_id == 4 and next_char == 0) or
                             (task_id == 5 and cur == nchar - 2 and next_char == nchar - 1) or
                             (task_id == 6 and cur == 1 and next_char == 2) or
-                            (task_id == 9 and cur == 1 and next_char == 2)):  # Task 9: after '.' comes ')'
+                            (task_id == 8 and i > 0 and sequence[i-1] == '=') or  # Task 8: after '=' marker
+                            (task_id == 9 and i == len(sequence) - 1)):  # Task 9: only evaluate the last character (label)
                             is_eval = True
                     
                     eval_mask[i] = is_eval
