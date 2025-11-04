@@ -1,0 +1,27 @@
+Stack-RNN Training
+Task: 8, nchar: 4
+Model parameters: 162720
+Configuration: TrainingConfig(
+  lr=0.1, lr_decay=0.5, lr_min=1e-05
+  nepoch=100, nseq=2000, nmax=20
+  curriculum=True, start=3
+  bptt=50, nreset=1000
+  seed=1, device=cpu
+)
+
+
+======================================================================
+Starting training: Task 8
+======================================================================
+
+  [Curriculum] Epoch 0: nmax = 3
+Epoch   0 |  Train loss = 0.6357 | Val loss = 0.7089 | Val acc = 0.0000 | Time: 27.25s | LR: 1.00e-01
+  [Curriculum] Epoch 1: nmax = 4
+Epoch   1 |  Train loss = 0.5394 | Val loss = 1.0185 | Val acc = 0.0000 | Time: 29.85s | LR: 1.00e-01
+  [Curriculum] Epoch 2: nmax = 5
+Epoch   2 |  Train loss = 0.5644 | Val loss = 0.8560 | Val acc = 0.0000 | Time: 36.52s | LR: 1.00e-01
+  [Curriculum] Epoch 3: nmax = 6
+Epoch   3 |  Train loss = 0.5399 | Val loss = 0.6230 | Val acc = 0.0000 | Time: 38.02s | LR: 1.00e-01
+  [Curriculum] Epoch 4: nmax = 7
+Epoch   4 |  Train loss = 0.5133 | Val loss = 0.6829 | Val acc = 0.0000 | Time: 43.86s | LR: 1.00e-01
+  [Curriculum] Epoch 5: nmax = 8

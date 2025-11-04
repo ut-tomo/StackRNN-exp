@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ベースラインモデル（LSTM, Transformer, Mamba）で全タスク（1-7）を学習するスクリプト
+# ベースラインモデル（LSTM, Transformer, Mamba）で全タスク（1-9）を学習するスクリプト
 
 set -e 
 
@@ -17,7 +17,7 @@ echo ""
 
 MODELS=("lstm" "transformer" "mamba")
 
-TASKS=(1 2 3 4 5 6 7)
+TASKS=(1 2 3 4 5 6 7 8 9)
 
 SEED=42
 DEVICE="cpu"

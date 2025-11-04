@@ -1,0 +1,78 @@
+Stack-RNN Training
+Task: 8, nchar: 4
+Model parameters: 162720
+Configuration: TrainingConfig(
+  lr=0.1, lr_decay=0.5, lr_min=1e-05
+  nepoch=100, nseq=2000, nmax=5
+  curriculum=True, start=3
+  bptt=50, nreset=1000
+  seed=1, device=cpu
+)
+
+
+======================================================================
+Starting training: Task 8
+======================================================================
+
+  [Curriculum] Epoch 0: nmax = 3
+Epoch   0 |  Train loss = 0.6388 | Val loss = 0.5764 | Val acc = 0.4702 | Time: 39.44s | LR: 1.00e-01
+  [Curriculum] Epoch 1: nmax = 4
+Epoch   1 |  Train loss = 0.5553 | Val loss = 0.5939 | Val acc = 0.5305 | Time: 48.61s | LR: 1.00e-01
+  [Curriculum] Epoch 2: nmax = 5
+Epoch   2 |  Train loss = 0.5827 | Val loss = 0.5400 | Val acc = 0.7545 | Time: 47.44s | LR: 1.00e-01
+  [Curriculum] Epoch 3: nmax = 5
+Epoch   3 |  Train loss = 0.5790 | Val loss = 0.5422 | Val acc = 0.7252 | Time: 46.28s | LR: 1.00e-01
+  → LR decayed to 5.00e-02
+  → Restored best model from epoch 2
+  [Curriculum] Epoch 4: nmax = 5
+Epoch   4 |  Train loss = 0.5700 | Val loss = 0.5739 | Val acc = 0.6517 | Time: 45.84s | LR: 5.00e-02
+  → LR decayed to 2.50e-02
+  → Restored best model from epoch 2
+  [Curriculum] Epoch 5: nmax = 5
+Epoch   5 |  Train loss = 0.5608 | Val loss = 0.6335 | Val acc = 0.5813 | Time: 45.67s | LR: 2.50e-02
+  → LR decayed to 1.25e-02
+  → Restored best model from epoch 2
+  [Curriculum] Epoch 6: nmax = 5
+Epoch   6 |  Train loss = 0.5532 | Val loss = 0.6868 | Val acc = 0.5661 | Time: 45.80s | LR: 1.25e-02
+  → LR decayed to 6.25e-03
+  → Restored best model from epoch 2
+  [Curriculum] Epoch 7: nmax = 5
+Epoch   7 |  Train loss = 0.5493 | Val loss = 0.7220 | Val acc = 0.5691 | Time: 45.70s | LR: 6.25e-03
+  → LR decayed to 3.13e-03
+  → Restored best model from epoch 2
+  [Curriculum] Epoch 8: nmax = 5
+Epoch   8 |  Train loss = 0.5477 | Val loss = 0.7372 | Val acc = 0.5697 | Time: 45.92s | LR: 3.13e-03
+  → LR decayed to 1.56e-03
+  → Restored best model from epoch 2
+  [Curriculum] Epoch 9: nmax = 5
+Epoch   9 |  Train loss = 0.5471 | Val loss = 0.7390 | Val acc = 0.5679 | Time: 45.68s | LR: 1.56e-03
+  → LR decayed to 7.81e-04
+  → Restored best model from epoch 2
+  [Curriculum] Epoch 10: nmax = 5
+Epoch  10 |  Train loss = 0.5469 | Val loss = 0.7372 | Val acc = 0.5669 | Time: 45.87s | LR: 7.81e-04
+  → LR decayed to 3.91e-04
+  → Restored best model from epoch 2
+  [Curriculum] Epoch 11: nmax = 5
+Epoch  11 |  Train loss = 0.5472 | Val loss = 0.7333 | Val acc = 0.5680 | Time: 45.76s | LR: 3.91e-04
+  → LR decayed to 1.95e-04
+  → Restored best model from epoch 2
+  [Curriculum] Epoch 12: nmax = 5
+Epoch  12 |  Train loss = 0.5474 | Val loss = 0.7329 | Val acc = 0.5703 | Time: 45.82s | LR: 1.95e-04
+  → LR decayed to 9.77e-05
+  → Restored best model from epoch 2
+  [Curriculum] Epoch 13: nmax = 5
+Epoch  13 |  Train loss = 0.5475 | Val loss = 0.7357 | Val acc = 0.5736 | Time: 45.76s | LR: 9.77e-05
+  → LR decayed to 4.88e-05
+  → Restored best model from epoch 2
+  [Curriculum] Epoch 14: nmax = 5
+Epoch  14 |  Train loss = 0.5475 | Val loss = 0.7425 | Val acc = 0.5767 | Time: 45.29s | LR: 4.88e-05
+  → LR decayed to 2.44e-05
+  → Restored best model from epoch 2
+Epoch  15 |  Train loss = 0.5474 | Val loss = 0.7483 | Val acc = 0.5777 | Time: 45.39s | LR: 2.44e-05
+  → LR decayed to 1.22e-05
+  → Restored best model from epoch 2
+Epoch  16 |  Train loss = 0.5472 | Val loss = 0.7510 | Val acc = 0.5778 | Time: 45.84s | LR: 1.22e-05
+  → LR decayed to 6.10e-06
+  → Restored best model from epoch 2
+
+  → LR < 1e-05, stopping training

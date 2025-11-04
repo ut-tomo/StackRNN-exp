@@ -3,10 +3,13 @@ import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, TYPE_CHECKING
 
 from src.data import generate_next_sequence, char_to_idx, set_seed
 from src.config import TrainingConfig
+
+if TYPE_CHECKING:
+    from src.validation.baseline_validator import BaselineValidator
 
 class BaselineTrainer:
     def __init__(
@@ -16,32 +19,27 @@ class BaselineTrainer:
         task_id: int,
         nchar: int,
         config: TrainingConfig,
+        validator: Optional['BaselineValidator'] = None,
     ):
         self.model = model
         self.model_type = model_type
         self.task_id = task_id
         self.nchar = nchar
         self.config = config
+        self._baseline_validator = validator
 
-        self.optimizer = torch.optim.Adam(
+        # Use SGD optimizer to match C++ implementation
+        self.optimizer = torch.optim.SGD(
             model.parameters(),
             lr=config.lr,
-            betas=(0.9, 0.999),
-            eps=1e-8
+            momentum=0.0  # C++ uses plain SGD without momentum
         )
-        # LR スケジューラ
-        self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-            self.optimizer, 
-            mode='min', #損失は小さいほどGOOD
-            factor=config.lr_decay_factor, # 減衰率
-            patience=5, 
-            threshold=1e-4,
-            min_lr=config.lr_min
-        )
+        
         self.criterion = nn.CrossEntropyLoss()
         
         self.current_epoch = 0
         self.best_val_loss = float('inf')
+        self.best_val_acc = 0.0
         self.best_model_state = None
         self.epochs_without_improvement = 0
         
@@ -127,6 +125,8 @@ class BaselineTrainer:
         self._log(f"Starting training: {self.model_type.upper()} on Task {self.task_id}")
         self._log(f"{'='*70}\n")
         
+        last_val_loss = float('inf')
+        
         for epoch in range(self.config.nepoch):
             self.current_epoch = epoch
             start_time = time.time()
@@ -145,20 +145,45 @@ class BaselineTrainer:
                 f"Time: {epoch_time:.2f}s | LR: {current_lr:.2e}")
             self._log(log_str)
             
-            improved = self._check_improvement(epoch, val_loss, val_acc)
+            # C++ implementation: save best model and handle LR decay
+            if epoch == 0 or val_loss < last_val_loss:
+                last_val_loss = val_loss
+                self.best_val_loss = val_loss
+                self.best_val_acc = val_acc
+                
+                if self.config.save:
+                    self.best_model_state = {
+                        'epoch': epoch,
+                        'model_state_dict': self.model.state_dict(),
+                        'val_loss': val_loss,
+                        'val_acc': val_acc,
+                        'optimizer_state_dict': self.optimizer.state_dict(),
+                    }
+                self.epochs_without_improvement = 0
+            else:
+                # C++ behavior: if no improvement and epoch > nmax/2, decay LR and restore best model
+                if epoch > 0 and epoch > self.config.nmax // 2:
+                    # Decay learning rate
+                    for param_group in self.optimizer.param_groups:
+                        param_group['lr'] *= self.config.lr_decay_factor
+                    
+                    # Restore best model (C++ line 418: rnn.copy(back_up_model))
+                    if self.best_model_state is not None:
+                        self.model.load_state_dict(self.best_model_state['model_state_dict'])
+                        self._log(f"  → Restored best model and decayed LR to {self.optimizer.param_groups[0]['lr']:.2e}")
+                
+                self.epochs_without_improvement += 1
             
-            self.scheduler.step(val_loss)
-            
-            #Early Stop
+            # Early stop if LR too small
             if current_lr < self.config.lr_min:
                 self._log(f"\n  → LR < {self.config.lr_min}, stopping training")
                 break
             
-            if not improved:
-                self.epochs_without_improvement += 1
-                if self.epochs_without_improvement >= 20:
-                    self._log(f"\n  → No improvement for 20 epochs, stopping training")
-                    break
+            # Early stop if no improvement for too long
+            if self.epochs_without_improvement >= 20:
+                self._log(f"\n  → No improvement for 20 epochs, stopping training")
+                break
+                
         # Save final model
         if self.config.save and self.best_model_state is not None:
             self._save_best_model()
@@ -167,7 +192,7 @@ class BaselineTrainer:
     
         return {
             'best_val_loss': self.best_val_loss,
-            'best_val_acc': self.best_model_state['val_acc'] if self.best_model_state else 0.0,
+            'best_val_acc': self.best_val_acc,
             'final_epoch': self.current_epoch,
             'final_lr': self.optimizer.param_groups[0]['lr'],
         }
@@ -176,39 +201,20 @@ class BaselineTrainer:
         """Validate using BaselineValidator."""
         from src.validation import BaselineValidator
         
-        if not hasattr(self, '_baseline_validator'):
+        if self._baseline_validator is None:
             self._baseline_validator = BaselineValidator(
-                model_type=self.model_type,
                 nval=1000,
                 val_nmax_min=20
             )
         
         return self._baseline_validator.validate(
             self.model,
+            self.model_type,
             self.task_id,
             self.nchar,
             self.config.get_curriculum_nmax(self.current_epoch),
             self.config.seed,
         )
-    
-    def _check_improvement(self, epoch: int, val_loss: float, val_acc: float) -> bool:
-        """Check if validation improved and update best model."""
-        if epoch == 0 or val_loss < self.best_val_loss:
-            self.best_val_loss = val_loss
-            
-            if self.config.save:
-                self.best_model_state = {
-                    'epoch': epoch,
-                    'model_state_dict': self.model.state_dict(),
-                    'val_loss': val_loss,
-                    'val_acc': val_acc,
-                    'optimizer_state_dict': self.optimizer.state_dict(),
-                }
-            
-            self.epochs_without_improvement = 0
-            return True
-        else:
-            return False
     
     def _save_best_model(self):
         """Save best model checkpoint."""
@@ -222,4 +228,4 @@ class BaselineTrainer:
         
         self._log(f"\nBest model saved to {model_path}")
         self._log(f"Best Val Loss: {self.best_val_loss:.4f}, "
-                 f"Best Val Acc: {self.best_model_state['val_acc']:.4f}")
+                 f"Best Val Acc: {self.best_val_acc:.4f}")

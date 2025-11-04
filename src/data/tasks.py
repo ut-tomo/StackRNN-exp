@@ -121,6 +121,120 @@ def task7(nmax, nmin, base=2):
     return n_str + "+" + m_str + "=" + result_str + "."
 
 
+def task8(nmax, nmin, nchar=4):
+    """
+    Reverse Polish Notation (RPN) Evaluation
+    逆ポーランド記法の評価タスク
+    
+    例: "ab+c*" → (a+b)*c を評価
+    文字: a,b,c,...は値、+は加算演算子、=は結果の開始マーカー
+    
+    生成形式: operands operators = result
+    例: "abc++=" で a+b+c の結果
+    
+    簡略化版: 単純な加算のみ
+    nchar=4 の場合: a,b,c が値、+ が演算子
+    """
+    if nchar < 3:
+        raise ValueError("task8 requires at least 3 characters (2 operands + 1 operator)")
+    
+    # オペランドの数（2〜nmax）
+    n_operands = random.randint(max(2, nmin), max(2, nmax))
+    
+    # nchar-1 個の値を使用（最後の1文字は演算子用）
+    operand_chars = min(nchar - 1, n_operands)
+    
+    sequence = []
+    
+    # オペランドを追加（a, b, c, ...）
+    for i in range(n_operands):
+        sequence.append(chr(ord('a') + (i % operand_chars)))
+    
+    # 演算子を追加（n_operands - 1 個の+）
+    # RPN: a b + は a+b を意味する
+    for _ in range(n_operands - 1):
+        sequence.append('+')
+    
+    # 結果マーカー
+    sequence.append('=')
+    
+    # 結果を追加（簡略化: 同じオペランドの繰り返し）
+    # 実際の計算結果ではなく、パターンとして
+    for i in range(n_operands):
+        sequence.append(chr(ord('a') + (i % operand_chars)))
+    
+    return ''.join(sequence)
+
+
+def task9(nmax, nmin, nchar=3):
+    """
+    Balanced Parentheses (Dyck Language) - 3 character version
+    かっこ合わせタスク
+    
+    形式: '(' 中身 ')'
+    例: "(.)" や "((.)(.))"
+    
+    生成: 正しくネストされたかっこの列
+    nchar=3: '(' (a), '.' (b), ')' (c) の3文字
+    - '(' は開きかっこ
+    - '.' は中身・セパレータ
+    - ')' は閉じかっこ
+    
+    深さ nmin〜nmax-1 のランダムなDyck word + 中身
+    """
+    if nchar != 3:
+        raise ValueError("task9 requires exactly 3 characters: '(', '.', ')'")
+    
+    # 深さ（ペアの数）
+    n = random.randint(nmin, nmax - 1) if nmax > nmin else nmin
+    
+    if n == 0:
+        return ""
+    
+    # Dyck wordをランダム生成（括弧と中身を持つ構造）
+    # アルゴリズム: 開きかっこ、中身(.)、閉じかっこをバランスを保ちながら配置
+    
+    def generate_balanced(depth):
+        """再帰的にバランスした括弧列を生成"""
+        if depth == 0:
+            return []
+        
+        # ランダムに分割: depth個のペアをどう配置するか
+        if depth == 1:
+            # 単一ペア: (.)
+            return ['(', '.', ')']
+        
+        # 複数ペアの場合
+        result = []
+        remaining = depth
+        
+        while remaining > 0:
+            # この括弧ペアに何個のペアをネストするか
+            nest_depth = random.randint(0, remaining - 1)
+            result.append('(')
+            
+            if nest_depth > 0:
+                # ネストされた構造
+                result.extend(generate_balanced(nest_depth))
+            else:
+                # 中身だけ
+                result.append('.')
+            
+            result.append(')')
+            remaining -= (nest_depth + 1)
+        
+        return result
+    
+    sequence = generate_balanced(n)
+    
+    # 文字を 'a', 'b', 'c' に変換
+    # '(' -> 'a', '.' -> 'b', ')' -> 'c'
+    char_map = {'(': 'a', '.': 'b', ')': 'c'}
+    result = ''.join(char_map[c] for c in sequence)
+    
+    return result
+
+
 def generate_next_sequence(nmax, nmin, nchar, nrep, ntask):
     """Generate sequence based on task number."""
     if ntask == 1:
@@ -137,5 +251,9 @@ def generate_next_sequence(nmax, nmin, nchar, nrep, ntask):
         return task6(nmax, nmin, nchar)
     elif ntask == 7:
         return task7(nmax, nmin, base=2)  # Task 7 always uses base 2
+    elif ntask == 8:
+        return task8(nmax, nmin, nchar)  # Reverse Polish Notation
+    elif ntask == 9:
+        return task9(nmax, nmin, nchar)  # Balanced Parentheses
     else:
         return task1(nmax, nmin, nchar)

@@ -27,6 +27,8 @@ def get_task_config(task_id):
     5: a^nb^mc^{nm} (Multiplication)
     6: a^nb^mc^nd^m (Double counting)
     7: Binary Addition
+    8: Reverse Polish Notation (RPN)
+    9: Balanced Parentheses (Dyck Language)
     """
     task_configs = {
         1: {'nchar': 2, 'nmax': 50, 'curriculum_start': 3, 'description': 'a^nb^n'},
@@ -36,6 +38,8 @@ def get_task_config(task_id):
         5: {'nchar': 3, 'nmax': 20, 'curriculum_start': 3, 'description': 'a^nb^mc^{nm}'},
         6: {'nchar': 4, 'nmax': 50, 'curriculum_start': 3, 'description': 'a^nb^mc^nd^m'},
         7: {'nchar': 5, 'nmax': 15, 'curriculum_start': 3, 'description': 'Binary Addition'},
+        8: {'nchar': 4, 'nmax': 30, 'curriculum_start': 3, 'description': 'Reverse Polish Notation'},
+        9: {'nchar': 3, 'nmax': 40, 'curriculum_start': 3, 'description': 'Balanced Parentheses (3 chars)'},
     }
     return task_configs.get(task_id, task_configs[1])
 
@@ -242,7 +246,7 @@ def main():
                         choices=['all', 'lstm', 'transformer', 'mamba'],
                         help='Model type to train (default: all)')
     parser.add_argument('--task', type=int, default=None,
-                        choices=[1, 2, 3, 4, 5, 6, 7],
+                        choices=[1, 2, 3, 4, 5, 6, 7, 8, 9],
                         help='Task ID to train on (default: all tasks)')
     parser.add_argument('--seed', type=int, default=42,
                         help='Random seed (default: 42)')
@@ -262,7 +266,7 @@ def main():
     if args.task is not None:
         tasks = [args.task]
     else:
-        tasks = [1, 2, 3, 4, 5, 6, 7]
+        tasks = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     
     seeds = [args.seed]
     

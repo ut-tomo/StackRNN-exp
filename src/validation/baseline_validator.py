@@ -5,20 +5,21 @@ from typing import Tuple
 from src.data import generate_next_sequence, char_to_idx, set_seed
 
 class BaselineValidator:
-    def __init__(self, model_type: str, nval: int=1000, val_nmax_min: int=20):
+    def __init__(self, nval: int=1000, val_nmax_min: int=20, ishard: bool=False):
         """
         Args: 
-            model_type: 'lstm', 'transformer', 'mamba' TODO: 他のモデルの追加?
             nval: バリデーションシーケンス数
             val_nmax_min: バリデーションのnmaxの最小値
+            ishard: 未使用（StackRNN Validatorとのインターフェース互換性のため）
         """
-        self.model_type = model_type
         self.nval = nval
         self.val_nmax_min = val_nmax_min
+        self.ishard = ishard
     
     def validate(
         self,
         model: torch.nn.Module,
+        model_type: str,
         task_id: int,
         nchar: int,
         train_nmax: int,
@@ -32,10 +33,10 @@ class BaselineValidator:
         val_nmax = max(train_nmax, self.val_nmax_min)
         
         total_loss = 0.0
-        total_correct = 0
-        total_chars = 0
+        total_sequences_correct = 0
+        total_sequences = 0
         
-        criterion = nn.CrossEntropyLoss(reduction='sum')
+        criterion = nn.CrossEntropyLoss(reduction='none')
         
         with torch.no_grad():
             for iseq in range(self.nval):
@@ -46,29 +47,55 @@ class BaselineValidator:
                 
                 if len(indices) < 2:
                     continue
+                
                 input_seq = torch.tensor(indices[:-1], dtype=torch.long)
                 target_seq = torch.tensor(indices[1:], dtype=torch.long)
                 
-                if self.model_type == 'lstm':
+                if model_type == 'lstm':
                     output, _ = model(input_seq.unsqueeze(0))
                     output = output.squeeze(0)
-                elif self.model_type in ['transformer', 'mamba']:
+                elif model_type in ['transformer', 'mamba']:
                     output = model(input_seq.unsqueeze(0))
                     output = output.squeeze(0)
                 else:
-                    raise ValueError(f"Unknown model type: {self.model_type}")
+                    raise ValueError(f"Unknown model type: {model_type}")
                 
-                # Calculate loss
-                loss = criterion(output, target_seq)
-                total_loss += loss.item()
+                # Calculate loss for all positions
+                loss_per_position = criterion(output, target_seq)
+                total_loss += loss_per_position.sum().item()
                 
-                # Calculate accuracy
-                predictions = torch.argmax(output, dim=-1)
-                correct = (predictions == target_seq).sum().item()
-                total_correct += correct
-                total_chars += len(target_seq)
+                # Determine evaluation region based on task
+                # C++ train_toy.cpp line 501-508
+                eval_mask = torch.zeros(len(target_seq), dtype=torch.bool)
+                is_eval = False
+                
+                for i in range(len(target_seq)):
+                    cur = indices[i]  # Current character (input at position i)
+                    next_char = indices[i + 1]  # Next character (target at position i)
+                    
+                    # Check if evaluation should start
+                    if not is_eval:
+                        if ((task_id == 1 and cur == 0 and next_char != 0) or
+                            (task_id == 2 and cur == 0 and next_char != 0) or
+                            (task_id == 3 and cur == nchar - 2 and next_char == nchar - 1) or
+                            (task_id == 4 and next_char == 0) or
+                            (task_id == 5 and cur == nchar - 2 and next_char == nchar - 1) or
+                            (task_id == 6 and cur == 1 and next_char == 2) or
+                            (task_id == 9 and cur == 1 and next_char == 2)):  # Task 9: after '.' comes ')'
+                            is_eval = True
+                    
+                    eval_mask[i] = is_eval
+                
+                # Check if all evaluated positions are correct
+                if eval_mask.any():
+                    predictions = torch.argmax(output, dim=-1)
+                    eval_correct = (predictions[eval_mask] == target_seq[eval_mask]).all().item()
+                    if eval_correct:
+                        total_sequences_correct += 1
+                
+                total_sequences += 1
         
-        avg_loss = total_loss / total_chars if total_chars > 0 else 0.0
-        avg_accuracy = total_correct / total_chars if total_chars > 0 else 0.0
+        avg_loss = total_loss / (self.nval * val_nmax) if self.nval > 0 else 0.0
+        avg_accuracy = total_sequences_correct / total_sequences if total_sequences > 0 else 0.0
         
         return avg_loss, avg_accuracy

@@ -8,7 +8,26 @@ from typing import Any, Dict, Optional
 from src.data import generate_next_sequence, char_to_idx, set_seed
 from src.config import TrainingConfig
 
+"""
+BPTT実装に違いあり:
+C++実装:
 
+・ 50-step BPTT: 循環バッファで50ステップ分の履歴を保持
+・ 長期依存性: 最大50ステップ遡って勾配を計算
+・ 複雑な実装: 手動でバッファとインデックスを管理
+
+PyTorch実装:
+
+・ 1-step BPTT: 毎ステップ後にdetach_hidden_states()を呼ぶ
+・ シンプル: 自動微分を活用、実装が容易
+・ 安定性: 勾配の爆発・消失が起こりにくい
+・ 長期依存性が弱い: 1ステップ分の勾配のみ
+
+
+PyTorchの計算グラフの制約により1-step BPTTを採用
+backward()を呼ぶと計算グラフが解放される
+複数ステップの勾配を蓄積するには複雑な管理が必要
+"""
 class Trainer:
     def __init__(
         self,
@@ -99,10 +118,12 @@ class Trainer:
                             if param.grad is not None:
                                 param.data -= self.lr * param.grad
                                 param.grad.zero_()
-                    
-                    # BPTT: Detach hidden states periodically
-                    if pos % self.config.bptt == 0:
-                        self.model.detach_hidden_states()
+                
+                # 毎ステップ後にdetach（1-step BPTT）
+                # これはC++の実装とは異なるが、PyTorchでのオンライン学習の標準的なアプローチ
+                # C++ではメモリバッファで複数ステップを管理するが、
+                # PyTorchでは自動微分グラフの管理が異なるため、この方法が実用的
+                self.model.detach_hidden_states()
                 
                 total_loss += loss.item()
                 total_chars += 1
@@ -124,11 +145,11 @@ class Trainer:
             train_loss = self.train_epoch()
             
             if self.validator is not None:
-                val_loss, val_acc = self._validate(
+                val_loss, val_acc = self.validator.validate(
                     self.model,
                     self.task_id,
                     self.nchar,
-                    self.config.get_val_nmax(epoch),
+                    self.config.get_curriculum_nmax(epoch),
                     self.config.seed,
                 )
             else:
@@ -198,10 +219,14 @@ class Trainer:
         model_path = os.path.join(
             self.config.save_dir,
             f'model_ntask{self.task_id}_nchar{self.nchar}_'
-            f'nhid{self.model.n_hidden}_nstack{self.model.n_stack}_seed{self.config.seed}.pt'
+            f'nhid{self.model.nhid}_nstack{self.model.nstack}_seed{self.config.seed}.pt'
         )
-        torch.save(self.best_model_state, model_path)
-        
-        self._log(f"\nBest model saved to {model_path}")
-        self._log(f"Best Val Loss: {self.best_val_loss:.4f}, "
-                 f"Best Val Acc: {self.best_model_state['val_acc']:.4f}")
+        # Ensure directory exists
+        os.makedirs(os.path.dirname(model_path), exist_ok=True)
+        try:
+            torch.save(self.best_model_state, model_path)
+            self._log(f"\nBest model saved to {model_path}")
+            self._log(f"Best Val Loss: {self.best_val_loss:.4f}, "
+                     f"Best Val Acc: {self.best_model_state.get('val_acc', 0.0):.4f}")
+        except Exception as e:
+            self._log(f"Failed to save best model: {str(e)}")
