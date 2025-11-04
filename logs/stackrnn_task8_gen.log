@@ -33,3 +33,17 @@ Epoch   7 |  Train loss = 0.4493 | Val loss = 0.3739 | Val acc = 0.0000 | Time: 
   [Curriculum] Epoch 8: nmax = 11
 Epoch   8 |  Train loss = 0.4341 | Val loss = 0.3751 | Val acc = 0.0700 | Time: 59.11s | LR: 1.00e-01
   [Curriculum] Epoch 9: nmax = 12
+Epoch   9 |  Train loss = 0.4066 | Val loss = 0.3633 | Val acc = 0.0450 | Time: 65.34s | LR: 1.00e-01
+  [Curriculum] Epoch 10: nmax = 13
+Epoch  10 |  Train loss = 0.3947 | Val loss = 0.4137 | Val acc = 0.0200 | Time: 70.43s | LR: 1.00e-01
+  [Curriculum] Epoch 11: nmax = 14
+Epoch  11 |  Train loss = 0.3799 | Val loss = 0.3534 | Val acc = 0.1050 | Time: 73.34s | LR: 1.00e-01
+  [Curriculum] Epoch 12: nmax = 15
+Epoch  12 |  Train loss = 0.3547 | Val loss = 0.3318 | Val acc = 0.0750 | Time: 79.20s | LR: 1.00e-01
+  [Curriculum] Epoch 13: nmax = 16
+Epoch  13 |  Train loss = 0.3357 | Val loss = 0.3170 | Val acc = 0.0050 | Time: 87.30s | LR: 1.00e-01
+  [Curriculum] Epoch 14: nmax = 17
+Epoch  14 |  Train loss = 0.3222 | Val loss = 0.3145 | Val acc = 0.0050 | Time: 89.58s | LR: 1.00e-01
+Epoch  15 |  Train loss = 0.3037 | Val loss = 0.3169 | Val acc = 0.0000 | Time: 95.41s | LR: 1.00e-01
+  → LR decayed to 5.00e-02
+  → Restored best model from epoch 14

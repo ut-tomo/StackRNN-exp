@@ -155,11 +155,8 @@ def task8(nmax, nmin, nchar=4):
     for _ in range(n_operands - 1):
         sequence.append('+')
     
-    # 結果マーカー
     sequence.append('=')
     
-    # 結果を追加（簡略化: 同じオペランドの繰り返し）
-    # 実際の計算結果ではなく、パターンとして
     for i in range(n_operands):
         sequence.append(chr(ord('a') + (i % operand_chars)))
     
