@@ -16,14 +16,12 @@ class BaselineTrainer:
         task_id: int,
         nchar: int,
         config: TrainingConfig,
-        validator: Optional[Any] = None,
     ):
         self.model = model
         self.model_type = model_type
         self.task_id = task_id
         self.nchar = nchar
         self.config = config
-        self.validator = validator
 
         self.optimizer = torch.optim.Adam(
             model.parameters(),
@@ -135,10 +133,8 @@ class BaselineTrainer:
             
             train_loss = self.train_epoch()
             
-            if self.validator is not None:
-                val_loss, val_acc = self._validate()
-            else:
-                val_loss, val_acc = 0.0, 0.0
+            # Always run validation
+            val_loss, val_acc = self._validate()
 
             epoch_time = time.time() - start_time
             

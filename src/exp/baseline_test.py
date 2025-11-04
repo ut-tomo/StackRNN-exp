@@ -76,22 +76,21 @@ def create_model(model_type, nchar, model_config):
         )
     elif model_type == 'transformer':
         model = TransformerModel(
-            vocab_size=nchar,
-            d_model=model_config['d_model'],
+            nchar=nchar,
+            nhid=model_config['d_model'],
             nhead=model_config['nhead'],
-            num_layers=model_config['num_layers'],
-            dim_feedforward=model_config['dim_feedforward'],
+            nlayers=model_config['num_layers'],
             dropout=model_config.get('dropout', 0.1),
-            max_seq_len=model_config.get('max_seq_len', 200)
+            max_len=model_config.get('max_seq_len', 200)
         )
     elif model_type == 'mamba':
         model = MambaModel(
-            vocab_size=nchar,
-            d_model=model_config['d_model'],
-            n_layers=model_config['n_layers'],
+            nchar=nchar,
+            nhid=model_config['d_model'],
+            nlayers=model_config['n_layers'],
             d_state=model_config.get('d_state', 16),
-            expand_factor=model_config.get('expand_factor', 2),
-            d_conv=model_config.get('d_conv', 4)
+            d_conv=model_config.get('d_conv', 4),
+            expand_factor=model_config.get('expand_factor', 2)
         )
     else:
         raise ValueError(f"Unknown model type: {model_type}")
@@ -156,8 +155,7 @@ def train_model(model_type, task_id, seed=42, device='cpu'):
         model_type=model_type,
         task_id=task_id,
         nchar=nchar,
-        config=config,
-        validator=None
+        config=config
     )
     
     results = trainer.train()

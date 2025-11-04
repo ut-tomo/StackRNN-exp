@@ -38,10 +38,14 @@ class TrainingConfig:
     device: str = "cpu"
     
     def get_curriculum_nmax(self, epoch):
-        """Get curriculum nmax for given epoch."""
+        """
+        Get curriculum nmax for given epoch.
+        C++ implementation (train_toy.cpp line 276):
+            nmax = max(min(e+3, nmaxmax), 3)
+        """
         if not self.use_curriculum:
             return self.nmax
-        return max(self.curriculum_start + epoch * self.curriculum_increment, self.nmax)
+        return max(min(epoch + 3, self.nmax), 3)
     
     def get_val_nmax(self, train_nmax):
         """Get validation nmax (at least val_nmax_min)."""
