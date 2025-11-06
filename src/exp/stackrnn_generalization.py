@@ -41,7 +41,7 @@ TASK_CONFIGS = {
     6: {'name': 'a^nb^mc^nd^m', 'nchar': 4, 'description': 'Interleaved counting'},
     7: {'name': 'Binary Add', 'nchar': 14, 'description': 'Binary addition'},
     8: {'name': 'RPN', 'nchar': 4, 'description': 'Reverse Polish Notation'},
-    9: {'name': 'Parentheses', 'nchar': 4, 'description': 'Balanced parentheses classification'},
+    9: {'name': 'Parentheses', 'nchar': 5, 'description': 'Balanced parentheses (Dyck-1 with content + 2 label chars)'},
 }
 
 
@@ -92,7 +92,7 @@ def get_training_config(train_nmax=20, save_dir=None, seed=1):
 
 def evaluate_generalization(model, task_id, nchar, test_nmax_values, seed=1):
     """
-    Evaluate model on different sequence lengths.
+    Evaluate model on different sequence lengths using C++ test-style evaluation.
     
     Args:
         model: Trained model
@@ -105,15 +105,17 @@ def evaluate_generalization(model, task_id, nchar, test_nmax_values, seed=1):
         Dictionary mapping nmax to (loss, accuracy)
     """
     results = {}
-    validator = Validator(nval=200, val_nmax_min=20, ishard=False)  # 各長さで200シーケンス
+    validator = Validator(nval=1000, val_nmax_min=20, ishard=False)
     
     for test_nmax in test_nmax_values:
         print(f"  Evaluating on nmax={test_nmax}...", end=' ')
-        val_loss, val_acc = validator.validate(
+        # Use C++ test-style evaluation for accurate results
+        val_loss, val_acc = validator.seq_test(
             model=model,
             task_id=task_id,
             nchar=nchar,
-            train_nmax=test_nmax,
+            nmax=test_nmax,
+            ntest=1000,  # C++ default
             seed=seed
         )
         results[test_nmax] = {'loss': val_loss, 'accuracy': val_acc}
@@ -163,7 +165,15 @@ def run_generalization_experiment(
     config = get_training_config(train_nmax=train_nmax, save_dir=save_dir, seed=seed)
     
     # Create validator for training
-    validator = Validator(nval=config.nval, val_nmax_min=config.val_nmax_min, ishard=False)
+    # Task 1-6: No reset between sequences (continuous processing like C++ validation)
+    # Task 7+: Reset before each sequence
+    reset_per_seq = (task_id >= 7)
+    validator = Validator(
+        nval=config.nval, 
+        val_nmax_min=config.val_nmax_min, 
+        ishard=False,
+        reset_per_sequence=reset_per_seq
+    )
     
     # Create trainer
     trainer = Trainer(
@@ -185,6 +195,15 @@ def run_generalization_experiment(
     print(f"Final epoch: {train_results['final_epoch']}")
     print(f"{'='*70}\n")
     
+    # Load best model (if any) before evaluation to match test_init_methods.py behavior
+    try:
+        if trainer.best_model_state is not None:
+            model.load_state_dict(trainer.best_model_state['model_state_dict'])
+            print("Loaded best model state into model for evaluation.")
+    except Exception:
+        # If loading fails, continue with current model
+        pass
+
     # Evaluate generalization
     print(f"Evaluating generalization on different sequence lengths...")
     gen_results = evaluate_generalization(

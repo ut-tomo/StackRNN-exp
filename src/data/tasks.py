@@ -170,29 +170,34 @@ def task9(nmax, nmin, nchar=3):
     
     形式: "括弧列 + ラベル"
     
-    nchar=3: Dyck-1 (1種類の括弧のみ)
-        文字: '(' (a), ')' (b), ラベル (c: 正解 or 不正)
-        例: "(())" + 'c' → "aabbc" (正しい場合、ラベルは 'c'=正解)
-        例: "(()"  + 'a' → "aaba"  (不正な場合、ラベルは 'a'=不正)
-        
-    nchar=4: Dyck-1 with content (1種類の括弧 + 中身文字)
-        文字: '(' (a), 中身 (b), ')' (c), ラベル (d: 正解 or 不正)
-        例: "(x(x)x)" + 'd' → "ababcbd" (正しい場合)
-        例: "((x)x"   + 'a' → "abcba"   (不正な場合)
+    ★ラベルは専用の2文字を使用（invalid/valid）して二値分類を明確化★
     
-    nchar=5: Dyck-2 (2種類の括弧)
-        文字: '(' (a), ')' (b), '[' (c), ']' (d), ラベル (e: 正解 or 不正)
-        例: "([()])" + 'e' → "acadbde" (正しい場合)
-        例: "([)]"   + 'a' → "acbda"   (不正な場合、交差している)
+    nchar=4: Dyck-1 (1種類の括弧のみ) + ラベル専用2文字
+        括弧列用: '(' (a), ')' (b)
+        ラベル専用: invalid (c), valid (d)
+        例: "(())" + 'd' → "aabbd" (正しい場合、ラベルは 'd'=valid)
+        例: "(()"  + 'c' → "aabc"  (不正な場合、ラベルは 'c'=invalid)
+        
+    nchar=5: Dyck-1 with content (1種類の括弧 + 中身文字) + ラベル専用2文字
+        括弧列用: '(' (a), 中身 (b), ')' (c)
+        ラベル専用: invalid (d), valid (e)
+        例: "(x(x)x)" + 'e' → "ababcbe" (正しい場合)
+        例: "((x)x"   + 'd' → "abacd"   (不正な場合)
+    
+    nchar=6: Dyck-2 (2種類の括弧) + ラベル専用2文字
+        括弧列用: '(' (a), ')' (b), '[' (c), ']' (d)
+        ラベル専用: invalid (e), valid (f)
+        例: "([()])" + 'f' → "acadbdf" (正しい場合)
+        例: "([)]"   + 'e' → "acbde"   (不正な場合、交差している)
     
     タスク: 括弧列が正しくバランスしているかを判定
-    - 正しい → 最後の文字が nchar-1 のインデックス
-    - 不正   → 最後の文字が 0 のインデックス
+    - 正しい → 最後の文字が nchar-1 のインデックス (valid専用文字)
+    - 不正   → 最後の文字が nchar-2 のインデックス (invalid専用文字)
     
-    評価: 最後の1文字の予測精度
+    評価: 最後の1文字の予測精度（2択の二値分類）
     """
-    if nchar not in [3, 4, 5]:
-        raise ValueError("task9 requires 3, 4, or 5 characters")
+    if nchar not in [4, 5, 6]:
+        raise ValueError("task9 requires 4, 5, or 6 characters (括弧列用 + ラベル専用2文字)")
     
     # 系列長（括弧列の長さ）
     n = random.randint(nmin, nmax - 1) if nmax > nmin else nmin
@@ -203,8 +208,8 @@ def task9(nmax, nmin, nchar=3):
     # 50%の確率で正しい括弧列、50%で不正な括弧列を生成
     is_valid = random.random() < 0.5
     
-    if nchar == 3:
-        # Dyck-1: 1種類の括弧のみ (括弧 + ラベル)
+    if nchar == 4:
+        # Dyck-1: 1種類の括弧のみ + ラベル専用2文字
         if is_valid:
             # 正しい括弧列を生成
             sequence = []
@@ -251,11 +256,11 @@ def task9(nmax, nmin, nchar=3):
         # 文字を 'a', 'b' に変換
         result = ''.join('a' if c == '(' else 'b' for c in sequence)
         
-        # ラベルを追加: 正解なら 'c' (index 2), 不正なら 'a' (index 0)
-        label_char = chr(ord('a') + 2) if is_valid else 'a'
+        # ラベルを追加: valid なら 'd' (index 3), invalid なら 'c' (index 2)
+        label_char = chr(ord('a') + 3) if is_valid else chr(ord('a') + 2)
         result += label_char
         
-    elif nchar == 4:
+    elif nchar == 5:
         # Dyck-1 with content: 括弧 + 中身文字 + ラベル
         if is_valid:
             # 正しい括弧列を生成
@@ -319,11 +324,11 @@ def task9(nmax, nmin, nchar=3):
         char_map = {'(': 'a', 'x': 'b', ')': 'c'}
         result = ''.join(char_map.get(c, 'b') for c in sequence)
         
-        # ラベルを追加: 正解なら 'd' (index 3), 不正なら 'a' (index 0)
-        label_char = chr(ord('a') + 3) if is_valid else 'a'
+        # ラベルを追加: valid なら 'e' (index 4), invalid なら 'd' (index 3)
+        label_char = chr(ord('a') + 4) if is_valid else chr(ord('a') + 3)
         result += label_char
     
-    elif nchar == 5:
+    elif nchar == 6:
         # Dyck-2: 2種類の括弧 () と []
         if is_valid:
             # 正しい括弧列を生成（ネストと順序が正しい）
@@ -420,8 +425,8 @@ def task9(nmax, nmin, nchar=3):
         char_map = {'(': 'a', ')': 'b', '[': 'c', ']': 'd'}
         result = ''.join(char_map.get(c, 'a') for c in sequence)
         
-        # ラベルを追加: 正解なら 'e' (index 4), 不正なら 'a' (index 0)
-        label_char = chr(ord('a') + 4) if is_valid else 'a'
+        # ラベルを追加: valid なら 'f' (index 5), invalid なら 'e' (index 4)
+        label_char = chr(ord('a') + 5) if is_valid else chr(ord('a') + 4)
         result += label_char
     
     return result

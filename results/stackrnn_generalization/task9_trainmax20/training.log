@@ -1,6 +1,6 @@
 Stack-RNN Training
-Task: 9, nchar: 4
-Model parameters: 162720
+Task: 9, nchar: 5
+Model parameters: 162800
 Configuration: TrainingConfig(
   lr=0.1, lr_decay=0.5, lr_min=1e-05
   nepoch=100, nseq=2000, nmax=20
@@ -15,17 +15,86 @@ Starting training: Task 9
 ======================================================================
 
   [Curriculum] Epoch 0: nmax = 3
-Epoch   0 |  Train loss = 1.0832 | Val loss = 1.4762 | Val acc = 0.2350 | Time: 9.61s | LR: 1.00e-01
+Epoch   0 |  Train loss = 1.2060 | Val loss = 1.9640 | Val acc = 0.3000 | Time: 9.49s | LR: 1.00e-01
   [Curriculum] Epoch 1: nmax = 4
-Epoch   1 |  Train loss = 1.0568 | Val loss = 1.3129 | Val acc = 0.2350 | Time: 9.79s | LR: 1.00e-01
+Epoch   1 |  Train loss = 1.1659 | Val loss = 1.7767 | Val acc = 0.3750 | Time: 9.81s | LR: 1.00e-01
   [Curriculum] Epoch 2: nmax = 5
-Epoch   2 |  Train loss = 1.0802 | Val loss = 1.2965 | Val acc = 0.2350 | Time: 10.35s | LR: 1.00e-01
+Epoch   2 |  Train loss = 1.1899 | Val loss = 2.2292 | Val acc = 0.1700 | Time: 10.69s | LR: 1.00e-01
   [Curriculum] Epoch 3: nmax = 6
-Epoch   3 |  Train loss = 1.0933 | Val loss = 1.2145 | Val acc = 0.2300 | Time: 11.28s | LR: 1.00e-01
+Epoch   3 |  Train loss = 1.1969 | Val loss = 1.7512 | Val acc = 0.2600 | Time: 11.03s | LR: 1.00e-01
   [Curriculum] Epoch 4: nmax = 7
-Epoch   4 |  Train loss = 1.1156 | Val loss = 1.2393 | Val acc = 0.1000 | Time: 12.29s | LR: 1.00e-01
+Epoch   4 |  Train loss = 1.2531 | Val loss = 1.6067 | Val acc = 0.2650 | Time: 12.02s | LR: 1.00e-01
   [Curriculum] Epoch 5: nmax = 8
-Epoch   5 |  Train loss = 1.1274 | Val loss = 1.2229 | Val acc = 0.2350 | Time: 13.22s | LR: 1.00e-01
+Epoch   5 |  Train loss = 1.2766 | Val loss = 1.5107 | Val acc = 0.3000 | Time: 12.98s | LR: 1.00e-01
   [Curriculum] Epoch 6: nmax = 9
-Epoch   6 |  Train loss = 1.1330 | Val loss = 1.1706 | Val acc = 0.1200 | Time: 13.89s | LR: 1.00e-01
+Epoch   6 |  Train loss = 1.2799 | Val loss = 1.5430 | Val acc = 0.3450 | Time: 13.87s | LR: 1.00e-01
   [Curriculum] Epoch 7: nmax = 10
+Epoch   7 |  Train loss = 1.2745 | Val loss = 1.3289 | Val acc = 0.3000 | Time: 14.95s | LR: 1.00e-01
+  [Curriculum] Epoch 8: nmax = 11
+Epoch   8 |  Train loss = 1.2837 | Val loss = 1.3107 | Val acc = 0.4750 | Time: 16.43s | LR: 1.00e-01
+  [Curriculum] Epoch 9: nmax = 12
+Epoch   9 |  Train loss = 1.2915 | Val loss = 1.3277 | Val acc = 0.2850 | Time: 17.19s | LR: 1.00e-01
+  [Curriculum] Epoch 10: nmax = 13
+Epoch  10 |  Train loss = 1.2899 | Val loss = 1.2852 | Val acc = 0.3050 | Time: 18.31s | LR: 1.00e-01
+  [Curriculum] Epoch 11: nmax = 14
+Epoch  11 |  Train loss = 1.2832 | Val loss = 1.2837 | Val acc = 0.5750 | Time: 19.65s | LR: 1.00e-01
+  [Curriculum] Epoch 12: nmax = 15
+Epoch  12 |  Train loss = 1.2772 | Val loss = 1.3159 | Val acc = 0.3400 | Time: 20.28s | LR: 1.00e-01
+  → LR decayed to 5.00e-02
+  → Restored best model from epoch 11
+  [Curriculum] Epoch 13: nmax = 16
+Epoch  13 |  Train loss = 1.2726 | Val loss = 1.3146 | Val acc = 0.5850 | Time: 21.40s | LR: 5.00e-02
+  → LR decayed to 2.50e-02
+  → Restored best model from epoch 11
+  [Curriculum] Epoch 14: nmax = 17
+Epoch  14 |  Train loss = 1.2656 | Val loss = 1.2622 | Val acc = 0.5500 | Time: 22.68s | LR: 2.50e-02
+Epoch  15 |  Train loss = 1.2576 | Val loss = 1.2571 | Val acc = 0.4400 | Time: 23.33s | LR: 2.50e-02
+Epoch  16 |  Train loss = 1.2561 | Val loss = 1.2580 | Val acc = 0.4250 | Time: 24.30s | LR: 2.50e-02
+  → LR decayed to 1.25e-02
+  → Restored best model from epoch 15
+Epoch  17 |  Train loss = 1.2470 | Val loss = 1.2577 | Val acc = 0.4950 | Time: 25.41s | LR: 1.25e-02
+  → LR decayed to 6.25e-03
+  → Restored best model from epoch 15
+Epoch  18 |  Train loss = 1.2455 | Val loss = 1.2560 | Val acc = 0.4450 | Time: 25.25s | LR: 6.25e-03
+Epoch  19 |  Train loss = 1.2451 | Val loss = 1.2556 | Val acc = 0.4300 | Time: 25.41s | LR: 6.25e-03
+Epoch  20 |  Train loss = 1.2448 | Val loss = 1.2552 | Val acc = 0.4300 | Time: 25.24s | LR: 6.25e-03
+Epoch  21 |  Train loss = 1.2445 | Val loss = 1.2549 | Val acc = 0.4250 | Time: 25.31s | LR: 6.25e-03
+Epoch  22 |  Train loss = 1.2442 | Val loss = 1.2548 | Val acc = 0.4200 | Time: 25.39s | LR: 6.25e-03
+Epoch  23 |  Train loss = 1.2440 | Val loss = 1.2547 | Val acc = 0.4200 | Time: 25.25s | LR: 6.25e-03
+Epoch  24 |  Train loss = 1.2438 | Val loss = 1.2548 | Val acc = 0.4300 | Time: 25.39s | LR: 6.25e-03
+  → LR decayed to 3.13e-03
+  → Restored best model from epoch 23
+Epoch  25 |  Train loss = 1.2432 | Val loss = 1.2552 | Val acc = 0.4150 | Time: 25.33s | LR: 3.13e-03
+  → LR decayed to 1.56e-03
+  → Restored best model from epoch 23
+Epoch  26 |  Train loss = 1.2431 | Val loss = 1.2551 | Val acc = 0.4200 | Time: 25.40s | LR: 1.56e-03
+  → LR decayed to 7.81e-04
+  → Restored best model from epoch 23
+Epoch  27 |  Train loss = 1.2431 | Val loss = 1.2551 | Val acc = 0.4600 | Time: 26.56s | LR: 7.81e-04
+  → LR decayed to 3.91e-04
+  → Restored best model from epoch 23
+Epoch  28 |  Train loss = 1.2430 | Val loss = 1.2552 | Val acc = 0.4850 | Time: 26.59s | LR: 3.91e-04
+  → LR decayed to 1.95e-04
+  → Restored best model from epoch 23
+Epoch  29 |  Train loss = 1.2429 | Val loss = 1.2553 | Val acc = 0.4800 | Time: 25.31s | LR: 1.95e-04
+  → LR decayed to 9.77e-05
+  → Restored best model from epoch 23
+Epoch  30 |  Train loss = 1.2429 | Val loss = 1.2553 | Val acc = 0.4900 | Time: 25.16s | LR: 9.77e-05
+  → LR decayed to 4.88e-05
+  → Restored best model from epoch 23
+Epoch  31 |  Train loss = 1.2429 | Val loss = 1.2553 | Val acc = 0.4900 | Time: 25.23s | LR: 4.88e-05
+  → LR decayed to 2.44e-05
+  → Restored best model from epoch 23
+Epoch  32 |  Train loss = 1.2429 | Val loss = 1.2553 | Val acc = 0.4900 | Time: 25.07s | LR: 2.44e-05
+  → LR decayed to 1.22e-05
+  → Restored best model from epoch 23
+Epoch  33 |  Train loss = 1.2429 | Val loss = 1.2553 | Val acc = 0.4950 | Time: 25.30s | LR: 1.22e-05
+  → LR decayed to 6.10e-06
+  → Restored best model from epoch 23
+
+  → LR < 1e-05, stopping training
+
+Best model saved to ./results/stackrnn_generalization/task9_trainmax20/model_ntask9_nchar5_nhid40_nstack10_seed1.pt
+Best Val Loss: 1.2547, Best Val Acc: 0.4200
+
+Training completed!

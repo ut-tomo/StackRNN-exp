@@ -38,7 +38,7 @@ TASK_CONFIGS = {
     6: {'name': 'a^nb^mc^nd^m', 'nchar': 4, 'description': 'Interleaved counting'},
     7: {'name': 'Binary Add', 'nchar': 14, 'description': 'Binary addition'},
     8: {'name': 'RPN', 'nchar': 4, 'description': 'Reverse Polish Notation'},
-    9: {'name': 'Parentheses', 'nchar': 4, 'description': 'Balanced parentheses classification'},
+    9: {'name': 'Parentheses', 'nchar': 5, 'description': 'Balanced parentheses (Dyck-1 with content + 2 label chars)'},
 }
 
 

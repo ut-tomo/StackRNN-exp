@@ -9,24 +9,14 @@ from src.data import generate_next_sequence, char_to_idx, set_seed
 from src.config import TrainingConfig
 
 """
-BPTT実装に違いあり:
-C++実装:
+BPTT実装:
+C++実装: 50-step BPTT (デフォルト)
+Python実装: 50-step BPTT (C++と同じ)
 
-・ 50-step BPTT: 循環バッファで50ステップ分の履歴を保持
-・ 長期依存性: 最大50ステップ遡って勾配を計算
-・ 複雑な実装: 手動でバッファとインデックスを管理
-
-PyTorch実装:
-
-・ 1-step BPTT: 毎ステップ後にdetach_hidden_states()を呼ぶ
-・ シンプル: 自動微分を活用、実装が容易
-・ 安定性: 勾配の爆発・消失が起こりにくい
-・ 長期依存性が弱い: 1ステップ分の勾配のみ
-
-
-PyTorchの計算グラフの制約により1-step BPTTを採用
-backward()を呼ぶと計算グラフが解放される
-複数ステップの勾配を蓄積するには複雑な管理が必要
+実装方法:
+- 50ステップ分の勾配を蓄積
+- 50ステップごとにoptimizer.step()で重み更新
+- 更新後にdetach_hidden_states()で勾配グラフを切断
 """
 class Trainer:
     def __init__(
@@ -36,12 +26,14 @@ class Trainer:
         nchar: int,
         config: TrainingConfig,
         validator: Optional[Any] = None,
+        bptt_steps: int = 50,  # C++ default
     ):
         self.model = model
         self.task_id = task_id
         self.nchar = nchar
         self.config = config
         self.validator = validator
+        self.bptt_steps = bptt_steps
         
         self.current_epoch = 0
         self.lr = config.lr
@@ -73,63 +65,76 @@ class Trainer:
     def train_epoch(self) -> float:
         """
         一文字あたりの平均損失を返す
+        C++ style BPTT=50 implementation
         """
         self.model.train()
+        # Reset stacks at the beginning of each epoch to match C++ behavior
         self.model.empty_stacks()
-        cur = self.nchar - 1
-        
+
         current_nmax = self.config.get_curriculum_nmax(self.current_epoch)
-        
+
         if self.current_epoch < 15:
             self._log(f"  [Curriculum] Epoch {self.current_epoch}: nmax = {current_nmax}")
-        
+
         total_loss = 0.0
         total_chars = 0
-        
+        bptt_step_count = 0  # BPTT window内のステップ数
+
         for iseq in range(self.config.nseq):
             sequence = generate_next_sequence(
                 current_nmax, 2, self.nchar, 1, self.task_id
             )
-            
+            indices = [char_to_idx(ch, self.nchar, self.task_id) for ch in sequence]
+
+            if len(indices) < 2:
+                continue
+
             # C++での Conditional Stack Reset
-            # if(nreset == 1 || (nreset > 0 && iseq % nreset == 0))
-            # 3つのモードがある
-            # nreset == 1: 毎回リセット
-            # nreset > 1: nresetごとにリセット
-            # nreset == 0: リセットしない
-            if self.config.nreset > 0 and iseq % self.config.nreset == 0 and iseq > 0:
+            if self.config.nreset == 1 or (self.config.nreset > 0 and iseq % self.config.nreset == 0):
                 self.model.empty_stacks()
-            
-            for pos, ch in enumerate(sequence):
-                next_char = char_to_idx(ch, self.nchar, self.task_id)
-                
+
+            for pos in range(len(indices) - 1):
+                cur = indices[pos]
+                next_char = indices[pos + 1]
+
                 output_probs, loss = self.model.forward_step(cur, next_char, training=True)
-                
-                #開始マーカーは勾配更新をスキップ, 代わりにempty_stacks()を呼ぶ
-                if pos == 0 and iseq == 0:
+
+                # C++: skip gradient update for the very first character
+                if pos == 0 and iseq == 0 and self.current_epoch == 0:
                     self.model.empty_stacks()
                 else:
+                    # Backward: 勾配を蓄積（PyTorchが自動的に加算）
                     loss.backward()
-                    torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=15.0)
+                    bptt_step_count += 1
                     
-                    # Manual SGD update (no optimizer needed)
-                    with torch.no_grad():
-                        for param in self.model.parameters():
-                            if param.grad is not None:
-                                param.data -= self.lr * param.grad
-                                param.grad.zero_()
-                
-                # 毎ステップ後にdetach（1-step BPTT）
-                # これはC++の実装とは異なるが、PyTorchでのオンライン学習の標準的なアプローチ
-                # C++ではメモリバッファで複数ステップを管理するが、
-                # PyTorchでは自動微分グラフの管理が異なるため、この方法が実用的
-                self.model.detach_hidden_states()
-                
+                    # BPTT window が満杯になったら更新
+                    if bptt_step_count >= self.bptt_steps:
+                        # 勾配クリッピング
+                        torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=15.0)
+                        
+                        # Manual SGD update
+                        with torch.no_grad():
+                            for param in self.model.parameters():
+                                if param.grad is not None:
+                                    param.data -= self.lr * param.grad
+                                    param.grad.zero_()
+                        
+                        # Hidden stateのみdetach（次のBPTTウィンドウのため）
+                        self.model.detach_hidden_states()
+                        bptt_step_count = 0
+
                 total_loss += loss.item()
                 total_chars += 1
-                
-                cur = next_char
         
+        # エポック終了時に残った勾配を更新
+        if bptt_step_count > 0:
+            torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=15.0)
+            with torch.no_grad():
+                for param in self.model.parameters():
+                    if param.grad is not None:
+                        param.data -= self.lr * param.grad
+                        param.grad.zero_()
+
         avg_loss = total_loss / total_chars
         return avg_loss
                     
@@ -141,9 +146,17 @@ class Trainer:
         for epoch in range(self.config.nepoch):
             self.current_epoch = epoch
             start_time = time.time()
-            
+
+            # If Needed
+            try:
+                self.model.empty_stacks()
+                if hasattr(self.model, 'reset_state'):
+                    self.model.reset_state()
+            except Exception:
+                pass
+
             train_loss = self.train_epoch()
-            
+
             if self.validator is not None:
                 val_loss, val_acc = self.validator.validate(
                     self.model,
@@ -163,9 +176,12 @@ class Trainer:
                 f"Time: {epoch_time:.2f}s | LR: {self.lr:.2e}"
             )
             self._log(log_str)
-            improved = self._check_improvement(epoch, val_loss, val_acc)
+
+
+            improved = self._check_improvement(epoch, train_loss, val_acc)
             
-            if not improved and self.config.should_decay_lr(epoch):
+
+            if epoch > 0 and not improved and self.config.should_decay_lr(epoch):
                 self._decay_lr()
                 
             if self.lr < self.config.lr_min:
